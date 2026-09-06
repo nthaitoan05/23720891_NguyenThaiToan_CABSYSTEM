@@ -512,12 +512,40 @@ flowchart LR
 
 # Requirements Traceability Matrix
 
-| Business Goal | Business Requirement | Functional Requirement | Acceptance Criteria |
-|---|---|---|---|
-| BG1 - Xây dựng nền tảng CAB có khả năng mở rộng | BR01 - Xây dựng nền tảng đặt xe trực tuyến | FR03 - Tạo yêu cầu đặt xe; FR04 - Tiếp nhận yêu cầu | AC03 - Tạo yêu cầu đặt xe; AC04 - Tiếp nhận yêu cầu |
-| BG2 - Tự động hóa quy trình tìm và phân công tài xế | BR03 - Tự động hóa việc tìm và phân công tài xế | FR05 - Xác định tài xế phù hợp; FR06 - Ưu tiên tài xế; FR07 - Gửi yêu cầu đến tài xế; FR08 - Xử lý phản hồi tài xế; FR09 - Tìm tài xế thay thế; FR10 - Thông báo không tìm được tài xế | AC05; AC06; AC07; AC08; AC09; AC10 |
-| BG3 - Nâng cao trải nghiệm khách hàng | BR05 - Cung cấp khả năng theo dõi chuyến đi | FR14 - Theo dõi chuyến; FR15 - Hiển thị thông tin tài xế; FR22 - Xem lịch sử chuyến; FR23 - Xem số tiền phải trả; FR24 - Đánh giá tài xế | AC14; AC15; AC22; AC23; AC24 |
-| BG4 - Nâng cao hiệu quả quản lý và vận hành | BR08 - Hỗ trợ quản lý và vận hành tập trung | FR29 - Quản lý khách hàng; FR30 - Quản lý tài xế; FR31 - Quản lý phương tiện; FR32 - Quản lý chuyến đi; FR33 - Theo dõi chuyến đang diễn ra; FR34 - Xử lý chuyến bị lỗi; FR35 - Tra cứu lịch sử giao dịch | — |
-| BG5 - Quản lý thanh toán và doanh thu hiệu quả | BR06 - Hỗ trợ tính cước và thanh toán | FR16 - Tính tiền chuyến đi; FR17 - Thanh toán tiền mặt; FR18 - Thanh toán điện tử; FR19 - Xử lý kết quả thanh toán; FR20 - Xử lý thanh toán thất bại | AC16; AC17; AC18; AC19; AC20 |
-| BG6 - Đảm bảo hệ thống ổn định, bảo mật và liên tục | BR10 - Đảm bảo tính ổn định và khả năng mở rộng; BR11 - Đảm bảo an toàn và bảo mật dữ liệu | FR01 - Đăng nhập; FR36 - Phân quyền quản trị | AC01; AC20 |
-| BG7 - Hỗ trợ quản lý và ra quyết định dựa trên dữ liệu | BR09 - Cung cấp báo cáo hoạt động | FR37 - Cung cấp báo cáo hoạt động | — |
+| BG | BR | BPM | FR | UC | AC |
+|---|---|---|---|---|---|
+| BG1 | BR01 | BPM01 - Đặt xe | FR01 - Đăng nhập | UC01 - Đăng nhập | AC01 |
+| BG1 | BR01 | BPM01 - Đặt xe | FR02 - Nhập thông tin chuyến | UC02 - Đặt xe | AC02 |
+| BG1 | BR01 | BPM01 - Đặt xe | FR03 - Tạo yêu cầu đặt xe | UC02 - Đặt xe | AC03 |
+| BG1 | BR01 | BPM01 - Đặt xe | FR04 - Tiếp nhận yêu cầu | UC02 - Đặt xe | AC04 |
+| BG2 | BR03 | BPM02 - Tìm kiếm và phân công tài xế | FR05 - Xác định tài xế phù hợp | UC03 - Tìm tài xế | AC05 |
+| BG2 | BR03 | BPM02 - Tìm kiếm và phân công tài xế | FR06 - Ưu tiên tài xế | UC03 - Tìm tài xế | AC06 |
+| BG2 | BR03 | BPM02 - Tìm kiếm và phân công tài xế | FR07 - Gửi yêu cầu đến tài xế | UC04 - Nhận yêu cầu chuyến | AC07 |
+| BG2 | BR03 | BPM02 - Tìm kiếm và phân công tài xế | FR08 - Xử lý phản hồi tài xế | UC05 - Chấp nhận / Từ chối chuyến | AC08 |
+| BG2 | BR03 | BPM02 - Tìm kiếm và phân công tài xế | FR09 - Tìm tài xế thay thế | UC03 - Tìm tài xế | AC09 |
+| BG2 | BR03 | BPM02 - Tìm kiếm và phân công tài xế | FR10 - Thông báo không tìm được tài xế | UC06 - Thông báo kết quả tìm tài xế | AC10 |
+| BG3 | BR05 | BPM03 - Xác nhận và theo dõi chuyến | FR11 - Thông báo tài xế nhận chuyến | UC06 - Thông báo chuyến | AC11 |
+| BG3 | BR05 | BPM03 - Xác nhận và theo dõi chuyến | FR14 - Theo dõi chuyến | UC07 - Theo dõi chuyến | AC14 |
+| BG3 | BR05 | BPM03 - Xác nhận và theo dõi chuyến | FR15 - Hiển thị thông tin tài xế | UC07 - Theo dõi chuyến | AC15 |
+| BG3 | BR05 | BPM04 - Thực hiện chuyến | FR12 - Cập nhật trạng thái chuyến | UC08 - Thực hiện chuyến | AC12 |
+| BG3 | BR05 | BPM04 - Thực hiện chuyến | FR13 - Cập nhật vị trí tài xế | UC08 - Thực hiện chuyến | AC13 |
+| BG5 | BR06 | BPM05 - Tính cước và thanh toán | FR16 - Tính tiền chuyến đi | UC09 - Tính cước | AC16 |
+| BG5 | BR06 | BPM05 - Tính cước và thanh toán | FR17 - Thanh toán tiền mặt | UC10 - Thanh toán | AC17 |
+| BG5 | BR06 | BPM05 - Tính cước và thanh toán | FR18 - Thanh toán điện tử | UC10 - Thanh toán | AC18 |
+| BG5 | BR06 | BPM05 - Tính cước và thanh toán | FR19 - Xử lý kết quả thanh toán | UC10 - Thanh toán | AC19 |
+| BG5 | BR06 | BPM05 - Tính cước và thanh toán | FR20 - Xử lý thanh toán thất bại | UC10 - Thanh toán | AC20 |
+| BG3 | BR07 | BPM06 - Hoàn tất chuyến | FR21 - Thông báo hoàn thành chuyến | UC11 - Hoàn tất chuyến | AC21 |
+| BG3 | BR05 | BPM06 - Hoàn tất chuyến | FR22 - Xem lịch sử chuyến | UC12 - Xem lịch sử chuyến | AC22 |
+| BG3 | BR05 | BPM06 - Hoàn tất chuyến | FR23 - Xem số tiền phải trả | UC13 - Xem thông tin thanh toán | AC23 |
+| BG3 | BR05 | BPM07 - Đánh giá | FR24 - Đánh giá tài xế | UC14 - Đánh giá tài xế | AC24 |
+| BG3 | BR07 | BPM02-BPM06 - Thông báo xuyên suốt quy trình | FR25 - Gửi thông báo trạng thái chuyến | UC06 - Thông báo chuyến | AC25 |
+| BG4 | BR08 | BPM08 - Quản lý vận hành | FR29 - Quản lý khách hàng | UC15 - Quản lý khách hàng | — |
+| BG4 | BR08 | BPM08 - Quản lý vận hành | FR30 - Quản lý tài xế | UC16 - Quản lý tài xế | — |
+| BG4 | BR08 | BPM08 - Quản lý vận hành | FR31 - Quản lý phương tiện | UC17 - Quản lý phương tiện | — |
+| BG4 | BR08 | BPM08 - Quản lý vận hành | FR32 - Quản lý chuyến đi | UC18 - Quản lý chuyến đi | — |
+| BG4 | BR08 | BPM08 - Quản lý vận hành | FR33 - Theo dõi chuyến đang diễn ra | UC19 - Theo dõi chuyến đang diễn ra | — |
+| BG4 | BR08 | BPM08 - Quản lý vận hành | FR34 - Xử lý chuyến bị lỗi | UC20 - Xử lý chuyến bị lỗi | — |
+| BG4 | BR08 | BPM08 - Quản lý vận hành | FR35 - Tra cứu lịch sử giao dịch | UC21 - Tra cứu lịch sử giao dịch | — |
+| BG6 | BR11 | BPM09 - Xác thực và phân quyền | FR01 - Đăng nhập | UC01 - Đăng nhập | AC01 |
+| BG6 | BR11 | BPM09 - Xác thực và phân quyền | FR36 - Phân quyền quản trị | UC22 - Phân quyền quản trị | — |
+| BG7 | BR09 | BPM10 - Báo cáo hoạt động | FR37 - Cung cấp báo cáo hoạt động | UC23 - Xem báo cáo hoạt động | — |
