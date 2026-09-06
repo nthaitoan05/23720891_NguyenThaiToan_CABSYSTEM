@@ -12,7 +12,6 @@
 
 
 
-
 ```mermaid
 quadrantChart
     title Stakeholder Matrix - CAB System
@@ -31,10 +30,10 @@ quadrantChart
     "Nhân viên quản trị": [0.70, 0.80]
     "NCC thanh toán": [0.35, 0.65]
     "NCC thông báo": [0.30, 0.40]
+```
 
 
 # Business Goals
-
 | ID | Business Goal | Mô tả |
 |---|---|---|
 | BG1 | Xây dựng nền tảng CAB có khả năng mở rộng | Xây dựng hệ thống có khả năng phục vụ số lượng lớn khách hàng và tài xế, đồng thời dễ dàng mở rộng thêm tính năng, dịch vụ và thành phần kỹ thuật trong tương lai. |
