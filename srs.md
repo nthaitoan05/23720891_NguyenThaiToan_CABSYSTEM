@@ -78,3 +78,89 @@ quadrantChart
 | BR10 | **Đảm bảo tính ổn định và khả năng mở rộng** | Hệ thống phải hoạt động ổn định khi nhu cầu tăng cao, các thành phần có thể mở rộng độc lập và lỗi tại một thành phần như thanh toán hoặc thông báo không làm toàn bộ hệ thống dừng hoạt động. |
 | BR11 | **Đảm bảo an toàn và bảo mật dữ liệu** | Hệ thống phải xác thực người dùng, kiểm soát quyền truy cập đối với các chức năng quản trị, bảo vệ dữ liệu cá nhân, dữ liệu vị trí và dữ liệu giao dịch, đồng thời lưu vết các thao tác quan trọng. |
 | BR12 | **Hỗ trợ phát triển và mở rộng trong tương lai** | Hệ thống phải có kiến trúc linh hoạt để có thể bổ sung loại dịch vụ, phương thức thanh toán, nhà cung cấp thông báo và thay đổi các thành phần kỹ thuật mà không phải xây dựng lại toàn bộ hệ thống. |
+
+
+
+# Business Process Modeling
+
+## 1. Business Process Overview
+
+Quy trình nghiệp vụ chính của hệ thống CAB bao gồm các bước:
+
+**Tạo yêu cầu đặt xe → Tìm kiếm và phân công tài xế → Xác nhận chuyến → Thực hiện chuyến → Tính cước → Thanh toán → Hoàn tất chuyến → Đánh giá**
+
+## 2. Business Process
+
+```mermaid
+flowchart TD
+
+    A([Start]) --> B[Khách hàng đăng nhập]
+    B --> C[Nhập điểm đón, điểm đến và chọn loại xe]
+    C --> D[Gửi yêu cầu đặt xe]
+
+    D --> E[Hệ thống tiếp nhận yêu cầu]
+    E --> F[Tìm tài xế phù hợp]
+
+    F --> G{Có tài xế phù hợp?}
+
+    G -- Không --> H[Thông báo không tìm được tài xế]
+    H --> Z([End])
+
+    G -- Có --> I[Gửi yêu cầu đến tài xế]
+    I --> J{Tài xế chấp nhận?}
+
+    J -- Không phản hồi / Từ chối --> K[Tìm tài xế phù hợp khác]
+    K --> F
+
+    J -- Có --> L[Thông báo tài xế đã nhận chuyến]
+    L --> M[Tài xế di chuyển đến điểm đón]
+
+    M --> N{Tài xế đã đến?}
+    N -- Chưa --> M
+    N -- Rồi --> O[Cập nhật trạng thái đã đến điểm đón]
+
+    O --> P[Đón khách]
+    P --> Q[Cập nhật trạng thái đang di chuyển]
+    Q --> R[Hoàn thành chuyến]
+
+    R --> S[Tính cước]
+    S --> T{Phương thức thanh toán}
+
+    T -- Tiền mặt --> U[Khách hàng thanh toán tiền mặt]
+    T -- Điện tử --> V[Thực hiện thanh toán qua nhà cung cấp]
+
+    V --> W{Thanh toán thành công?}
+    W -- Không --> X[Thông báo thanh toán thất bại và xử lý lại]
+    X --> V
+    W -- Có --> Y[Ghi nhận kết quả thanh toán]
+
+    U --> Y
+    Y --> AA[Thông báo hoàn thành chuyến]
+    AA --> AB[Khách hàng đánh giá tài xế]
+    AB --> AC([End])
+```
+
+## 3. Các bên tham gia trong Business Process
+
+| Actor / Stakeholder | Vai trò trong quy trình |
+|---|---|
+| **Khách hàng** | Tạo yêu cầu đặt xe, cung cấp điểm đón/điểm đến, chọn loại xe, theo dõi chuyến, thanh toán và đánh giá tài xế. |
+| **Hệ thống CAB** | Tiếp nhận yêu cầu, tìm và phân công tài xế, quản lý trạng thái chuyến, tính cước, xử lý thanh toán và gửi thông báo. |
+| **Tài xế** | Nhận/từ chối chuyến, di chuyển đến điểm đón, đón khách, cập nhật trạng thái và hoàn thành chuyến. |
+| **Nhà cung cấp thanh toán** | Xử lý giao dịch thanh toán điện tử và trả về kết quả giao dịch. |
+| **Nhân viên vận hành** | Theo dõi chuyến đang diễn ra, kiểm tra trạng thái tài xế và hỗ trợ xử lý các trường hợp chuyến bị lỗi. |
+
+## 4. Business Process theo Business Requirement
+
+| Business Requirement | Quy trình liên quan |
+|---|---|
+| **BR01 – Xây dựng nền tảng đặt xe trực tuyến** | Toàn bộ quy trình đặt và thực hiện chuyến |
+| **BR03 – Tự động hóa tìm và phân công tài xế** | Tìm tài xế → Kiểm tra phản hồi → Phân công tài xế khác khi cần |
+| **BR04 – Quản lý toàn bộ quy trình chuyến xe** | Từ tạo yêu cầu đến hoàn thành chuyến |
+| **BR05 – Theo dõi chuyến đi** | Cập nhật và thông báo trạng thái chuyến |
+| **BR06 – Tính cước và thanh toán** | Tính cước → Thanh toán → Xử lý kết quả giao dịch |
+| **BR07 – Quản lý thông báo** | Thông báo xuyên suốt các trạng thái của chuyến |
+| **BR08 – Quản lý và vận hành tập trung** | Nhân viên vận hành theo dõi và xử lý các trường hợp bất thường |
+| **BR09 – Báo cáo hoạt động** | Thu thập dữ liệu chuyến, doanh thu, hoàn thành và hủy |
+| **BR10 – Đảm bảo ổn định và mở rộng** | Các bước xử lý được tách biệt để lỗi thanh toán/thông báo không làm dừng toàn bộ quy trình |
+| **BR11 – Bảo mật dữ liệu** | Xác thực người dùng và kiểm soát quyền truy cập trong quy trình |
