@@ -483,28 +483,28 @@ flowchart LR
 
 | ID | Functional Requirement | Acceptance Criteria |
 |---|---|---|
-| FR01 | **Đăng nhập** | Người dùng nhập đúng thông tin tài khoản thì hệ thống cho phép đăng nhập. Nếu thông tin không hợp lệ, hệ thống thông báo lỗi và không cho phép truy cập chức năng yêu cầu đăng nhập. |
-| FR02 | **Nhập thông tin chuyến** | Khách hàng có thể nhập điểm đón, điểm đến và chọn loại xe trước khi gửi yêu cầu đặt xe. |
-| FR03 | **Tạo yêu cầu đặt xe** | Khi khách hàng cung cấp đầy đủ thông tin chuyến và gửi yêu cầu, hệ thống phải tạo và ghi nhận yêu cầu đặt xe thành công. |
-| FR04 | **Tiếp nhận yêu cầu** | Sau khi yêu cầu được tạo, hệ thống phải ghi nhận yêu cầu và chuyển sang bước tìm tài xế. |
-| FR05 | **Xác định tài xế phù hợp** | Hệ thống phải xác định được các tài xế phù hợp dựa trên vị trí, trạng thái sẵn sàng và các tiêu chí vận hành đã được cấu hình. |
-| FR06 | **Ưu tiên tài xế** | Hệ thống phải ưu tiên tài xế phù hợp và gần khách hàng theo tiêu chí vận hành của doanh nghiệp. |
-| FR07 | **Gửi yêu cầu đến tài xế** | Khi tìm được tài xế phù hợp, hệ thống phải gửi yêu cầu chuyến đến tài xế đó. |
-| FR08 | **Xử lý phản hồi tài xế** | Hệ thống phải ghi nhận được tài xế chấp nhận hoặc từ chối yêu cầu chuyến. |
-| FR09 | **Tìm tài xế thay thế** | Khi tài xế không phản hồi hoặc từ chối, hệ thống phải tiếp tục tìm tài xế khác mà không yêu cầu khách hàng tạo lại yêu cầu. |
-| FR10 | **Thông báo không tìm được tài xế** | Khi không tìm được tài xế phù hợp, hệ thống phải thông báo rõ ràng cho khách hàng. |
-| FR11 | **Thông báo tài xế nhận chuyến** | Khi tài xế chấp nhận chuyến, khách hàng phải nhận được thông báo và có thể xem thông tin tài xế. |
-| FR12 | **Cập nhật trạng thái chuyến** | Tài xế có thể cập nhật các trạng thái gồm: đã đến điểm đón, đã đón khách, đang di chuyển và hoàn thành chuyến. |
-| FR13 | **Cập nhật vị trí tài xế** | Hệ thống phải ghi nhận thông tin vị trí của tài xế để hỗ trợ tìm tài xế và dự kiến thời gian đến. |
-| FR14 | **Theo dõi chuyến** | Khách hàng có thể xem trạng thái hiện tại của chuyến trong quá trình thực hiện. |
-| FR15 | **Hiển thị thông tin tài xế** | Sau khi tài xế nhận chuyến, khách hàng có thể xem thông tin tài xế và thời gian dự kiến tài xế đến. |
-| FR16 | **Tính tiền chuyến đi** | Sau khi chuyến hoàn thành, hệ thống phải xác định được số tiền khách hàng phải trả dựa trên loại dịch vụ và thông tin chuyến đi. |
-| FR17 | **Thanh toán tiền mặt** | Khách hàng có thể chọn phương thức tiền mặt và hệ thống phải ghi nhận phương thức thanh toán của chuyến. |
-| FR18 | **Thanh toán điện tử** | Khi khách hàng chọn thanh toán điện tử, hệ thống phải gửi yêu cầu đến nhà cung cấp thanh toán và nhận kết quả giao dịch. |
-| FR19 | **Xử lý kết quả thanh toán** | Hệ thống phải ghi nhận trạng thái giao dịch thanh toán theo kết quả trả về từ phương thức thanh toán tương ứng. |
-| FR20 | **Xử lý thanh toán thất bại** | Khi thanh toán điện tử thất bại, hệ thống phải thông báo cho khách hàng và cho phép thực hiện lại theo chính sách của doanh nghiệp. |
-| FR21 | **Thông báo hoàn thành chuyến** | Khi chuyến được hoàn thành, hệ thống phải thông báo cho khách hàng về trạng thái hoàn thành và kết quả thanh toán. |
-| FR22 | **Xem lịch sử chuyến** | Khách hàng có thể xem danh sách các chuyến đã thực hiện và thông tin liên quan đến từng chuyến. |
-| FR23 | **Xem số tiền phải trả** | Khách hàng có thể xem số tiền phải trả của chuyến sau khi hệ thống hoàn tất tính cước. |
-| FR24 | **Đánh giá tài xế** | Sau khi chuyến hoàn thành, khách hàng có thể thực hiện đánh giá tài xế. |
-| FR25 | **Gửi thông báo trạng thái chuyến** | Hệ thống phải gửi thông báo cho khách hàng và tài xế khi có các sự kiện quan trọng liên quan đến chuyến đi. |
+| AC01 | FR01 - Đăng nhập | Người dùng nhập đúng thông tin tài khoản thì hệ thống cho phép đăng nhập. Nếu thông tin không hợp lệ, hệ thống thông báo lỗi và không cho phép truy cập chức năng yêu cầu đăng nhập. |
+| AC02 | FR02 - Nhập thông tin chuyến | Khách hàng có thể nhập điểm đón, điểm đến và chọn loại xe trước khi gửi yêu cầu đặt xe. |
+| AC03 | FR03 - Tạo yêu cầu đặt xe | Khi khách hàng cung cấp đầy đủ thông tin chuyến và gửi yêu cầu, hệ thống phải tạo và ghi nhận yêu cầu đặt xe thành công. |
+| AC04 | FR04 - Tiếp nhận yêu cầu | Sau khi yêu cầu được tạo, hệ thống phải ghi nhận yêu cầu và chuyển sang bước tìm tài xế. |
+| AC05 | FR05 - Xác định tài xế phù hợp | Hệ thống phải xác định được các tài xế phù hợp dựa trên vị trí, trạng thái sẵn sàng và các tiêu chí vận hành đã được cấu hình. |
+| AC06 | FR06 - Ưu tiên tài xế | Hệ thống phải ưu tiên tài xế phù hợp và gần khách hàng theo tiêu chí vận hành của doanh nghiệp. |
+| AC07 | FR07 - Gửi yêu cầu đến tài xế | Khi tìm được tài xế phù hợp, hệ thống phải gửi yêu cầu chuyến đến tài xế đó. |
+| AC08 | FR08 - Xử lý phản hồi tài xế | Hệ thống phải ghi nhận được tài xế chấp nhận hoặc từ chối yêu cầu chuyến. |
+| AC09 | FR09 - Tìm tài xế thay thế | Khi tài xế không phản hồi hoặc từ chối, hệ thống phải tiếp tục tìm tài xế khác mà không yêu cầu khách hàng tạo lại yêu cầu. |
+| AC10 | FR10 - Thông báo không tìm được tài xế | Khi không tìm được tài xế phù hợp, hệ thống phải thông báo rõ ràng cho khách hàng. |
+| AC11 | FR11 - Thông báo tài xế nhận chuyến | Khi tài xế chấp nhận chuyến, khách hàng phải nhận được thông báo và có thể xem thông tin tài xế. |
+| AC12 | FR12 - Cập nhật trạng thái chuyến | Tài xế có thể cập nhật các trạng thái gồm: đã đến điểm đón, đã đón khách, đang di chuyển và hoàn thành chuyến. |
+| AC13 | FR13 - Cập nhật vị trí tài xế | Hệ thống phải ghi nhận thông tin vị trí của tài xế để hỗ trợ tìm tài xế và dự kiến thời gian đến. |
+| AC14 | FR14 - Theo dõi chuyến | Khách hàng có thể xem trạng thái hiện tại của chuyến trong quá trình thực hiện. |
+| AC15 | FR15 - Hiển thị thông tin tài xế | Sau khi tài xế nhận chuyến, khách hàng có thể xem thông tin tài xế và thời gian dự kiến tài xế đến. |
+| AC16 | FR16 - Tính tiền chuyến đi | Sau khi chuyến hoàn thành, hệ thống phải xác định được số tiền khách hàng phải trả dựa trên loại dịch vụ và thông tin chuyến đi. |
+| AC17 | FR17 - Thanh toán tiền mặt | Khách hàng có thể chọn phương thức tiền mặt và hệ thống phải ghi nhận phương thức thanh toán của chuyến. |
+| AC18 | FR18 - Thanh toán điện tử | Khi khách hàng chọn thanh toán điện tử, hệ thống phải gửi yêu cầu đến nhà cung cấp thanh toán và nhận kết quả giao dịch. |
+| AC19 | FR19 - Xử lý kết quả thanh toán | Hệ thống phải ghi nhận trạng thái giao dịch thanh toán theo kết quả trả về từ phương thức thanh toán tương ứng. |
+| AC20 | FR20 - Xử lý thanh toán thất bại | Khi thanh toán điện tử thất bại, hệ thống phải thông báo cho khách hàng và cho phép thực hiện lại theo chính sách của doanh nghiệp. |
+| AC21 | FR21 - Thông báo hoàn thành chuyến | Khi chuyến được hoàn thành, hệ thống phải thông báo cho khách hàng về trạng thái hoàn thành và kết quả thanh toán. |
+| AC22 | FR22 - Xem lịch sử chuyến | Khách hàng có thể xem danh sách các chuyến đã thực hiện và thông tin liên quan đến từng chuyến. |
+| AC23 | FR23 - Xem số tiền phải trả | Khách hàng có thể xem số tiền phải trả của chuyến sau khi hệ thống hoàn tất tính cước. |
+| AC24 | FR24 - Đánh giá tài xế | Sau khi chuyến hoàn thành, khách hàng có thể thực hiện đánh giá tài xế. |
+| AC25 | FR25 - Gửi thông báo trạng thái chuyến | Hệ thống phải gửi thông báo cho khách hàng và tài xế khi có các sự kiện quan trọng liên quan đến chuyến đi. |
