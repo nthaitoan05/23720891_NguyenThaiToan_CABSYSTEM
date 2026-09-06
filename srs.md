@@ -197,47 +197,176 @@ flowchart TD
 | FR25 | Thông báo | Gửi thông báo trạng thái chuyến | Hệ thống gửi thông báo cho khách hàng và tài xế về các thay đổi quan trọng liên quan đến chuyến đi. |
 
 
-Business Process
-│
-├── 1. Đặt xe
-│   ├── FR01 Đăng nhập
-│   ├── FR02 Nhập thông tin chuyến
-│   ├── FR03 Tạo yêu cầu đặt xe
-│   └── FR04 Tiếp nhận yêu cầu
-│
-├── 2. Tìm tài xế
-│   ├── FR05 Xác định tài xế phù hợp
-│   ├── FR06 Ưu tiên tài xế
-│   ├── FR07 Gửi yêu cầu đến tài xế
-│   ├── FR08 Xử lý phản hồi
-│   ├── FR09 Tìm tài xế thay thế
-│   └── FR10 Thông báo không tìm được tài xế
-│
-├── 3. Xác nhận chuyến
-│   └── FR11 Thông báo tài xế nhận chuyến
-│
-├── 4. Thực hiện chuyến
-│   ├── FR12 Cập nhật trạng thái chuyến
-│   ├── FR13 Cập nhật vị trí tài xế
-│   ├── FR14 Theo dõi chuyến
-│   └── FR15 Hiển thị thông tin tài xế
-│
-├── 5. Tính cước
-│   └── FR16 Tính tiền chuyến đi
-│
-├── 6. Thanh toán
-│   ├── FR17 Thanh toán tiền mặt
-│   ├── FR18 Thanh toán điện tử
-│   ├── FR19 Xử lý kết quả thanh toán
-│   └── FR20 Xử lý thanh toán thất bại
-│
-├── 7. Hoàn tất chuyến
-│   ├── FR21 Thông báo hoàn thành
-│   ├── FR22 Xem lịch sử chuyến
-│   └── FR23 Xem số tiền phải trả
-│
-└── 8. Đánh giá
-    └── FR24 Đánh giá tài xế
+# Non-Functional Requirements
 
-    Thông báo là chức năng xuyên suốt
-    └── FR25 Gửi thông báo trạng thái chuyến
+| ID | Category | Non-Functional Requirement | Mô tả |
+|---|---|---|---|
+| NFR01 | **Performance** | Hệ thống phải đáp ứng tốt khi nhu cầu tăng cao | Hệ thống phải duy trì khả năng hoạt động ổn định khi số lượng khách hàng, tài xế và yêu cầu đặt xe tăng lên. |
+| NFR02 | **Scalability** | Hệ thống phải có khả năng mở rộng độc lập | Các thành phần của hệ thống phải có khả năng mở rộng độc lập khi tải tăng mà không cần mở rộng toàn bộ hệ thống. |
+| NFR03 | **Availability** | Hệ thống phải duy trì hoạt động khi một thành phần gặp lỗi | Lỗi tại chức năng thanh toán hoặc thông báo không được làm cho toàn bộ hệ thống đặt xe ngừng hoạt động. |
+| NFR04 | **Reliability** | Hệ thống phải hoạt động ổn định | Hệ thống phải đảm bảo hoạt động ổn định trong quá trình đặt xe, tìm tài xế, thực hiện chuyến, thanh toán và thông báo. |
+| NFR05 | **Security** | Hệ thống phải xác thực người dùng | Khách hàng và tài xế phải được xác thực trước khi sử dụng các chức năng yêu cầu tài khoản. |
+| NFR06 | **Authorization** | Hệ thống phải kiểm soát quyền truy cập | Các chức năng quản trị phải được phân quyền để ngăn nhân viên không có quyền thực hiện các thao tác nhạy cảm. |
+| NFR07 | **Data Security** | Hệ thống phải bảo vệ dữ liệu | Thông tin cá nhân, thông tin phương tiện, dữ liệu vị trí và dữ liệu giao dịch phải được bảo vệ. |
+| NFR08 | **Payment Security** | Hệ thống không lưu trực tiếp thông tin thanh toán nhạy cảm | Thông tin nhạy cảm của thẻ hoặc tài khoản thanh toán không được lưu trực tiếp trong hệ thống CAB. |
+| NFR09 | **Auditability** | Hệ thống phải lưu vết các thao tác quan trọng | Các thao tác quan trọng phải được ghi nhận để phục vụ kiểm tra và điều tra khi xảy ra sự cố. |
+| NFR10 | **Maintainability** | Hệ thống phải hỗ trợ triển khai chức năng từng phần | Các chức năng mới có thể được triển khai từng phần và hạn chế ảnh hưởng đến các chức năng đang hoạt động. |
+| NFR11 | **Extensibility** | Hệ thống phải linh hoạt để mở rộng trong tương lai | Có thể bổ sung loại dịch vụ mới, phương thức thanh toán mới hoặc nhà cung cấp thông báo mới mà không phải xây dựng lại toàn bộ ứng dụng. |
+| NFR12 | **Modularity** | Hệ thống phải hỗ trợ thay đổi thành phần kỹ thuật | Có thể thay đổi một số thành phần kỹ thuật mà hạn chế ảnh hưởng đến toàn bộ hệ thống. |
+
+
+
+# Exception Cases & Open Questions
+
+## 1. Các trường hợp ngoại lệ
+
+| ID | Quy trình | Trường hợp ngoại lệ | Cách xử lý |
+|---|---|---|---|
+| EX01 | Tìm tài xế | Không tìm được tài xế phù hợp | Hệ thống phải thông báo rõ ràng cho khách hàng và không yêu cầu khách hàng tạo lại yêu cầu. |
+| EX02 | Tìm tài xế | Tài xế được đề xuất không phản hồi | Hệ thống tiếp tục tìm tài xế phù hợp khác. |
+| EX03 | Tìm tài xế | Tài xế từ chối chuyến | Hệ thống tiếp tục tìm tài xế phù hợp khác mà không yêu cầu khách hàng tạo lại yêu cầu. |
+| EX04 | Thanh toán | Thanh toán điện tử thất bại | Hệ thống phải thông báo cho khách hàng và cho phép xử lý lại theo chính sách của doanh nghiệp. |
+| EX05 | Chuyến đi | Chuyến đi xảy ra lỗi | Nhân viên vận hành có thể kiểm tra và hỗ trợ xử lý trường hợp chuyến bị lỗi. |
+| EX06 | Hệ thống | Lỗi ở chức năng thanh toán hoặc thông báo | Lỗi của một thành phần không được làm cho toàn bộ hệ thống đặt xe ngừng hoạt động. |
+| EX07 | Bảo mật | Người dùng chưa được xác thực | Không cho phép khách hàng hoặc tài xế sử dụng các chức năng yêu cầu tài khoản khi chưa xác thực. |
+| EX08 | Quản trị | Nhân viên không có đủ quyền thực hiện thao tác nhạy cảm | Hệ thống phải kiểm soát quyền truy cập và ngăn thao tác không được phép. |
+
+## 2. Những điểm còn chưa rõ cần xác nhận với khách hàng
+
+| ID | Chủ đề | Điểm chưa rõ | Câu hỏi cần xác nhận |
+|---|---|---|---|
+| OQ01 | **Tính cước** | Cách tính tiền chuyến chưa được chốt. | Cước được tính dựa trên những yếu tố nào? Có tính theo quãng đường, thời gian, loại xe, phụ phí hay không? |
+| OQ02 | **Ưu tiên tài xế** | Tiêu chí ưu tiên tài xế chưa được xác định đầy đủ. | Hệ thống ưu tiên tài xế dựa trên khoảng cách, thời gian chờ, trạng thái hoạt động hay tiêu chí nào khác? |
+| OQ03 | **Phản hồi tài xế** | Chưa xác định thời gian tài xế phải phản hồi yêu cầu chuyến. | Tài xế có bao nhiêu giây/phút để chấp nhận hoặc từ chối trước khi hệ thống chuyển sang tài xế khác? |
+| OQ04 | **Hủy chuyến** | Chính sách hủy chuyến chưa được chốt. | Ai được phép hủy chuyến? Hủy ở những thời điểm nào? Có tính phí hủy hay không? |
+| OQ05 | **Mất kết nối mạng** | Chưa xác định cách xử lý khi khách hàng hoặc tài xế mất kết nối. | Hệ thống xử lý trạng thái chuyến và cập nhật dữ liệu như thế nào khi mất kết nối mạng? |
+| OQ06 | **Lưu trữ dữ liệu** | Chưa xác định thời gian lưu trữ dữ liệu. | Dữ liệu khách hàng, chuyến đi, vị trí và giao dịch được lưu trong bao lâu? |
+| OQ07 | **Thanh toán thất bại** | Chưa xác định đầy đủ quy trình retry. | Khách hàng được phép thử thanh toán lại bao nhiêu lần và trong khoảng thời gian nào? |
+| OQ08 | **Không tìm được tài xế** | Chưa xác định khi nào hệ thống kết luận là không tìm được tài xế. | Hệ thống sẽ tìm trong bao lâu hoặc thử tối đa bao nhiêu tài xế trước khi thông báo thất bại? |
+| OQ09 | **Vị trí tài xế** | Chưa xác định tần suất cập nhật vị trí. | Vị trí tài xế được cập nhật với tần suất bao nhiêu và trong những trạng thái nào của chuyến? |
+| OQ10 | **Phân quyền quản trị** | Chưa xác định chi tiết các vai trò và quyền quản trị. | Có những role quản trị nào và mỗi role được phép thực hiện những chức năng nào? |
+
+
+
+# ERD - CAB System MVP
+
+> ERD dưới đây là mô hình dữ liệu đề xuất dựa trên các yêu cầu nghiệp vụ và chức năng của CAB System.
+
+```mermaid
+erDiagram
+
+    USER {
+        int user_id PK
+        string username
+        string password
+        string role
+        string status
+        datetime created_at
+    }
+
+    CUSTOMER {
+        int customer_id PK
+        int user_id FK
+        string full_name
+        string phone
+        string email
+        string address
+    }
+
+    DRIVER {
+        int driver_id PK
+        int user_id FK
+        string full_name
+        string phone
+        string license_number
+        string status
+        boolean available
+        decimal latitude
+        decimal longitude
+    }
+
+    VEHICLE {
+        int vehicle_id PK
+        int driver_id FK
+        string license_plate
+        string vehicle_type
+        string brand
+        string model
+        string status
+    }
+
+    TRIP {
+        int trip_id PK
+        int customer_id FK
+        int driver_id FK
+        int vehicle_id FK
+        string pickup_location
+        string destination
+        string trip_status
+        datetime request_time
+        datetime start_time
+        datetime end_time
+        decimal fare
+    }
+
+    PAYMENT {
+        int payment_id PK
+        int trip_id FK
+        string payment_method
+        decimal amount
+        string payment_status
+        string transaction_reference
+        datetime payment_time
+    }
+
+    RATING {
+        int rating_id PK
+        int trip_id FK
+        int customer_id FK
+        int driver_id FK
+        int rating
+        string comment
+        datetime created_at
+    }
+
+    NOTIFICATION {
+        int notification_id PK
+        int user_id FK
+        int trip_id FK
+        string notification_type
+        string message
+        boolean is_read
+        datetime created_at
+    }
+
+    USER ||--o| CUSTOMER : "has"
+    USER ||--o| DRIVER : "has"
+
+    DRIVER ||--o{ VEHICLE : "owns"
+
+    CUSTOMER ||--o{ TRIP : "books"
+    DRIVER ||--o{ TRIP : "accepts"
+    VEHICLE ||--o{ TRIP : "used_for"
+
+    TRIP ||--o| PAYMENT : "has"
+
+    TRIP ||--o| RATING : "receives"
+    CUSTOMER ||--o{ RATING : "gives"
+    DRIVER ||--o{ RATING : "receives"
+
+    USER ||--o{ NOTIFICATION : "receives"
+    TRIP ||--o{ NOTIFICATION : "generates"
+```
+
+## Main Entities
+
+| Entity | Vai trò |
+|---|---|
+| **USER** | Lưu thông tin tài khoản và thông tin xác thực của người dùng trong hệ thống. |
+| **CUSTOMER** | Lưu thông tin khách hàng sử dụng dịch vụ đặt xe. |
+| **DRIVER** | Lưu thông tin tài xế, trạng thái hoạt động và vị trí hiện tại. |
+| **VEHICLE** | Lưu thông tin phương tiện được sử dụng bởi tài xế. |
+| **TRIP** | Lưu thông tin yêu cầu và quá trình thực hiện chuyến xe. |
+| **PAYMENT** | Lưu thông tin thanh toán của chuyến đi. |
+| **RATING** | Lưu đánh giá của khách hàng dành cho tài xế sau chuyến đi. |
+| **NOTIFICATION** | Lưu các thông báo gửi đến khách hàng hoặc tài xế. |
