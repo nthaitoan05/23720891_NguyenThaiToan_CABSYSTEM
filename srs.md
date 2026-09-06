@@ -508,3 +508,16 @@ flowchart LR
 | AC23 | FR23 - Xem số tiền phải trả | Khách hàng có thể xem số tiền phải trả của chuyến sau khi hệ thống hoàn tất tính cước. |
 | AC24 | FR24 - Đánh giá tài xế | Sau khi chuyến hoàn thành, khách hàng có thể thực hiện đánh giá tài xế. |
 | AC25 | FR25 - Gửi thông báo trạng thái chuyến | Hệ thống phải gửi thông báo cho khách hàng và tài xế khi có các sự kiện quan trọng liên quan đến chuyến đi. |
+
+
+# Requirements Traceability Matrix
+
+| Business Goal | Business Requirement | Functional Requirement | Acceptance Criteria |
+|---|---|---|---|
+| BG1 - Xây dựng nền tảng CAB có khả năng mở rộng | BR01 - Xây dựng nền tảng đặt xe trực tuyến | FR03 - Tạo yêu cầu đặt xe; FR04 - Tiếp nhận yêu cầu | AC03 - Tạo yêu cầu đặt xe; AC04 - Tiếp nhận yêu cầu |
+| BG2 - Tự động hóa quy trình tìm và phân công tài xế | BR03 - Tự động hóa việc tìm và phân công tài xế | FR05 - Xác định tài xế phù hợp; FR06 - Ưu tiên tài xế; FR07 - Gửi yêu cầu đến tài xế; FR08 - Xử lý phản hồi tài xế; FR09 - Tìm tài xế thay thế; FR10 - Thông báo không tìm được tài xế | AC05; AC06; AC07; AC08; AC09; AC10 |
+| BG3 - Nâng cao trải nghiệm khách hàng | BR05 - Cung cấp khả năng theo dõi chuyến đi | FR14 - Theo dõi chuyến; FR15 - Hiển thị thông tin tài xế; FR22 - Xem lịch sử chuyến; FR23 - Xem số tiền phải trả; FR24 - Đánh giá tài xế | AC14; AC15; AC22; AC23; AC24 |
+| BG4 - Nâng cao hiệu quả quản lý và vận hành | BR08 - Hỗ trợ quản lý và vận hành tập trung | FR29 - Quản lý khách hàng; FR30 - Quản lý tài xế; FR31 - Quản lý phương tiện; FR32 - Quản lý chuyến đi; FR33 - Theo dõi chuyến đang diễn ra; FR34 - Xử lý chuyến bị lỗi; FR35 - Tra cứu lịch sử giao dịch | — |
+| BG5 - Quản lý thanh toán và doanh thu hiệu quả | BR06 - Hỗ trợ tính cước và thanh toán | FR16 - Tính tiền chuyến đi; FR17 - Thanh toán tiền mặt; FR18 - Thanh toán điện tử; FR19 - Xử lý kết quả thanh toán; FR20 - Xử lý thanh toán thất bại | AC16; AC17; AC18; AC19; AC20 |
+| BG6 - Đảm bảo hệ thống ổn định, bảo mật và liên tục | BR10 - Đảm bảo tính ổn định và khả năng mở rộng; BR11 - Đảm bảo an toàn và bảo mật dữ liệu | FR01 - Đăng nhập; FR36 - Phân quyền quản trị | AC01; AC20 |
+| BG7 - Hỗ trợ quản lý và ra quyết định dựa trên dữ liệu | BR09 - Cung cấp báo cáo hoạt động | FR37 - Cung cấp báo cáo hoạt động | — |
