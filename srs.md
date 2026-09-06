@@ -164,3 +164,80 @@ flowchart TD
 | **BR09 – Báo cáo hoạt động** | Thu thập dữ liệu chuyến, doanh thu, hoàn thành và hủy |
 | **BR10 – Đảm bảo ổn định và mở rộng** | Các bước xử lý được tách biệt để lỗi thanh toán/thông báo không làm dừng toàn bộ quy trình |
 | **BR11 – Bảo mật dữ liệu** | Xác thực người dùng và kiểm soát quyền truy cập trong quy trình |
+
+
+# Functional Requirements
+
+| ID | Business Process | Functional Requirement | Mô tả |
+|---|---|---|---|
+| FR01 | Đặt xe | Đăng nhập | Hệ thống cho phép khách hàng đăng nhập trước khi sử dụng chức năng đặt xe. |
+| FR02 | Đặt xe | Nhập thông tin chuyến | Hệ thống cho phép khách hàng nhập điểm đón, điểm đến và chọn loại xe. |
+| FR03 | Đặt xe | Tạo yêu cầu đặt xe | Hệ thống cho phép khách hàng gửi yêu cầu đặt xe. |
+| FR04 | Đặt xe | Tiếp nhận yêu cầu | Hệ thống tiếp nhận và ghi nhận yêu cầu đặt xe của khách hàng. |
+| FR05 | Tìm tài xế | Xác định tài xế phù hợp | Hệ thống xác định các tài xế phù hợp dựa trên vị trí, trạng thái sẵn sàng và tiêu chí vận hành. |
+| FR06 | Tìm tài xế | Ưu tiên tài xế | Hệ thống ưu tiên tài xế phù hợp và gần khách hàng. |
+| FR07 | Tìm tài xế | Gửi yêu cầu đến tài xế | Hệ thống gửi yêu cầu chuyến đến tài xế phù hợp. |
+| FR08 | Tìm tài xế | Xử lý phản hồi tài xế | Hệ thống ghi nhận việc tài xế chấp nhận hoặc từ chối chuyến. |
+| FR09 | Tìm tài xế | Tìm tài xế thay thế | Khi tài xế không phản hồi hoặc từ chối, hệ thống tiếp tục tìm tài xế khác. |
+| FR10 | Tìm tài xế | Thông báo không tìm được tài xế | Hệ thống thông báo cho khách hàng khi không tìm được tài xế phù hợp. |
+| FR11 | Xác nhận chuyến | Thông báo tài xế nhận chuyến | Hệ thống thông báo cho khách hàng khi có tài xế nhận chuyến. |
+| FR12 | Thực hiện chuyến | Cập nhật trạng thái chuyến | Hệ thống cho phép tài xế cập nhật trạng thái: đã đến điểm đón, đã đón khách, đang di chuyển và hoàn thành chuyến. |
+| FR13 | Thực hiện chuyến | Cập nhật vị trí tài xế | Hệ thống ghi nhận thông tin vị trí của tài xế trong quá trình thực hiện chuyến. |
+| FR14 | Thực hiện chuyến | Theo dõi chuyến | Hệ thống cho phép khách hàng theo dõi trạng thái hiện tại của chuyến đi. |
+| FR15 | Thực hiện chuyến | Hiển thị thông tin tài xế | Hệ thống cung cấp cho khách hàng thông tin tài xế đã nhận chuyến và thời gian dự kiến tài xế đến. |
+| FR16 | Tính cước | Tính tiền chuyến đi | Hệ thống xác định số tiền khách hàng phải trả dựa trên loại dịch vụ và thông tin chuyến đi. |
+| FR17 | Thanh toán | Thanh toán tiền mặt | Hệ thống hỗ trợ khách hàng thanh toán bằng tiền mặt. |
+| FR18 | Thanh toán | Thanh toán điện tử | Hệ thống hỗ trợ thanh toán điện tử thông qua nhà cung cấp thanh toán bên ngoài. |
+| FR19 | Thanh toán | Xử lý kết quả thanh toán | Hệ thống ghi nhận kết quả giao dịch thanh toán. |
+| FR20 | Thanh toán | Xử lý thanh toán thất bại | Khi thanh toán điện tử thất bại, hệ thống thông báo cho khách hàng và hỗ trợ xử lý lại theo chính sách doanh nghiệp. |
+| FR21 | Hoàn tất chuyến | Thông báo hoàn thành chuyến | Hệ thống thông báo cho khách hàng khi chuyến đi hoàn thành. |
+| FR22 | Hoàn tất chuyến | Xem lịch sử chuyến | Hệ thống cho phép khách hàng xem lịch sử các chuyến đã thực hiện. |
+| FR23 | Hoàn tất chuyến | Xem số tiền phải trả | Hệ thống cho phép khách hàng xem số tiền phải trả cho chuyến đi. |
+| FR24 | Đánh giá | Đánh giá tài xế | Hệ thống cho phép khách hàng đánh giá tài xế sau khi chuyến đi hoàn thành. |
+| FR25 | Thông báo | Gửi thông báo trạng thái chuyến | Hệ thống gửi thông báo cho khách hàng và tài xế về các thay đổi quan trọng liên quan đến chuyến đi. |
+
+
+Business Process
+│
+├── 1. Đặt xe
+│   ├── FR01 Đăng nhập
+│   ├── FR02 Nhập thông tin chuyến
+│   ├── FR03 Tạo yêu cầu đặt xe
+│   └── FR04 Tiếp nhận yêu cầu
+│
+├── 2. Tìm tài xế
+│   ├── FR05 Xác định tài xế phù hợp
+│   ├── FR06 Ưu tiên tài xế
+│   ├── FR07 Gửi yêu cầu đến tài xế
+│   ├── FR08 Xử lý phản hồi
+│   ├── FR09 Tìm tài xế thay thế
+│   └── FR10 Thông báo không tìm được tài xế
+│
+├── 3. Xác nhận chuyến
+│   └── FR11 Thông báo tài xế nhận chuyến
+│
+├── 4. Thực hiện chuyến
+│   ├── FR12 Cập nhật trạng thái chuyến
+│   ├── FR13 Cập nhật vị trí tài xế
+│   ├── FR14 Theo dõi chuyến
+│   └── FR15 Hiển thị thông tin tài xế
+│
+├── 5. Tính cước
+│   └── FR16 Tính tiền chuyến đi
+│
+├── 6. Thanh toán
+│   ├── FR17 Thanh toán tiền mặt
+│   ├── FR18 Thanh toán điện tử
+│   ├── FR19 Xử lý kết quả thanh toán
+│   └── FR20 Xử lý thanh toán thất bại
+│
+├── 7. Hoàn tất chuyến
+│   ├── FR21 Thông báo hoàn thành
+│   ├── FR22 Xem lịch sử chuyến
+│   └── FR23 Xem số tiền phải trả
+│
+└── 8. Đánh giá
+    └── FR24 Đánh giá tài xế
+
+    Thông báo là chức năng xuyên suốt
+    └── FR25 Gửi thông báo trạng thái chuyến
