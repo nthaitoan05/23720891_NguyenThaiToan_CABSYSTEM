@@ -370,3 +370,109 @@ erDiagram
 | **PAYMENT** | Lưu thông tin thanh toán của chuyến đi. |
 | **RATING** | Lưu đánh giá của khách hàng dành cho tài xế sau chuyến đi. |
 | **NOTIFICATION** | Lưu các thông báo gửi đến khách hàng hoặc tài xế. |
+
+
+# Use Case Diagram - CAB System MVP
+
+```mermaid
+flowchart LR
+
+    %% Actors
+    Customer["Khách hàng"]
+    Driver["Tài xế"]
+    Operator["Nhân viên vận hành"]
+    Payment["Nhà cung cấp thanh toán"]
+    Notification["Nhà cung cấp thông báo"]
+
+    %% System Boundary
+    subgraph CAB["CAB System"]
+        
+        UC01(["Đăng ký tài khoản"])
+        UC02(["Đăng nhập"])
+        UC03(["Cập nhật thông tin cá nhân"])
+        
+        UC04(["Đặt xe"])
+        UC05(["Theo dõi chuyến đi"])
+        UC06(["Xem lịch sử chuyến"])
+        UC07(["Xem số tiền phải trả"])
+        UC08(["Đánh giá tài xế"])
+        
+        UC09(["Quản lý hồ sơ tài xế"])
+        UC10(["Quản lý phương tiện"])
+        UC11(["Cập nhật trạng thái hoạt động"])
+        UC12(["Nhận yêu cầu chuyến"])
+        UC13(["Chấp nhận / Từ chối chuyến"])
+        UC14(["Cập nhật trạng thái chuyến"])
+        
+        UC15(["Tìm tài xế phù hợp"])
+        UC16(["Phân công tài xế"])
+        UC17(["Tìm tài xế thay thế"])
+        
+        UC18(["Tính cước"])
+        UC19(["Thanh toán tiền mặt"])
+        UC20(["Thanh toán điện tử"])
+        UC21(["Xử lý thanh toán thất bại"])
+        
+        UC22(["Gửi thông báo"])
+        
+        UC23(["Quản lý khách hàng"])
+        UC24(["Quản lý tài xế"])
+        UC25(["Quản lý phương tiện"])
+        UC26(["Quản lý chuyến đi"])
+        UC27(["Theo dõi chuyến đang diễn ra"])
+        UC28(["Xử lý chuyến bị lỗi"])
+        UC29(["Tra cứu lịch sử giao dịch"])
+        
+        UC30(["Báo cáo hoạt động"])
+        UC31(["Phân quyền quản trị"])
+    end
+
+    %% Customer relationships
+    Customer --- UC01
+    Customer --- UC02
+    Customer --- UC03
+    Customer --- UC04
+    Customer --- UC05
+    Customer --- UC06
+    Customer --- UC07
+    Customer --- UC08
+
+    %% Driver relationships
+    Driver --- UC02
+    Driver --- UC03
+    Driver --- UC09
+    Driver --- UC10
+    Driver --- UC11
+    Driver --- UC12
+    Driver --- UC13
+    Driver --- UC14
+
+    %% System use cases
+    UC04 -.->|include| UC15
+    UC15 -.->|include| UC16
+    UC16 -.->|include| UC17
+
+    UC04 -.->|include| UC22
+    UC13 -.->|include| UC22
+    UC14 -.->|include| UC22
+
+    UC14 -.->|include| UC18
+
+    UC18 -.->|include| UC19
+    UC18 -.->|include| UC20
+    UC20 -.->|extend| UC21
+
+    UC20 --- Payment
+    UC22 --- Notification
+
+    %% Operator relationships
+    Operator --- UC23
+    Operator --- UC24
+    Operator --- UC25
+    Operator --- UC26
+    Operator --- UC27
+    Operator --- UC28
+    Operator --- UC29
+    Operator --- UC30
+    Operator --- UC31
+```
