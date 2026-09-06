@@ -1,5 +1,4 @@
 # Stakeholders
-
 | Stakeholder | Vai trò |
 |---|---|
 | **Ban giám đốc Công ty ABC** | Định hướng mục tiêu kinh doanh, đưa ra kỳ vọng đối với hệ thống và theo dõi các chỉ số hoạt động như số lượng chuyến, doanh thu, tỷ lệ hoàn thành, tỷ lệ hủy và hiệu quả của tài xế. |
@@ -43,3 +42,18 @@ quadrantChart
 | BG5 | Quản lý thanh toán và doanh thu hiệu quả | Hỗ trợ tính cước, thanh toán tiền mặt và điện tử, tích hợp với nhà cung cấp thanh toán bên ngoài và quản lý thông tin giao dịch tập trung. |
 | BG6 | Đảm bảo hệ thống ổn định, bảo mật và liên tục | Đảm bảo hệ thống hoạt động ổn định khi nhu cầu tăng cao, các thành phần có thể mở rộng độc lập, đồng thời bảo vệ dữ liệu và kiểm soát quyền truy cập. |
 | BG7 | Hỗ trợ quản lý và ra quyết định dựa trên dữ liệu | Cung cấp báo cáo về số lượng chuyến, doanh thu, tỷ lệ hoàn thành, tỷ lệ hủy và hiệu quả hoạt động của tài xế. |
+
+
+
+# MVP Modules
+1. Quản lý tài khoản & xác thực
+2. Quản lý khách hàng
+3. Quản lý tài xế & phương tiện
+4. Đặt xe
+5. Tìm kiếm & phân công tài xế
+6. Quản lý chuyến đi
+7. Tính cước & thanh toán
+8. Thông báo
+9. Quản lý vận hành
+10. Quản lý đánh giá
+11. Báo cáo cơ bản
