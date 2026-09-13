@@ -1,0 +1,50 @@
+openapi: 3.0.3
+info:
+  title: CAB System API - Payments & Billing
+  description: Tính cước, xử lý thanh toán và nhận webhook kết quả giao dịch (FR09, FR10, FR11).
+  version: 1.0.0
+servers:
+  - url: https://api.cabsystem.local/v1
+paths:
+  /payments/trips/{tripId}:
+    post:
+      summary: Khách hàng thanh toán cước phí
+      tags: [Payment]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: tripId
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                payment_method: { type: string, enum: [cash, digital] }
+      responses:
+        '200': { description: "Xử lý thành công (hoặc trả link thanh toán điện tử)." }
+  /payments/webhook:
+    post:
+      summary: Nhận kết quả từ cổng thanh toán bên thứ ba
+      tags: [Payment]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                transaction_reference: { type: string }
+                status: { type: string, enum: [success, failed] }
+                amount: { type: number }
+      responses:
+        '200': { description: "Đã ghi nhận kết quả." }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
