@@ -199,45 +199,29 @@ flowchart TD
 
 # 7. Functional Requirements
 
+> Đã rà soát và gộp các chức năng nhỏ lẻ, liên quan chặt chẽ với nhau vào cùng một FR (ví dụ: các bước nhập liệu/gửi yêu cầu trong cùng một thao tác nghiệp vụ, các thao tác CRUD cùng nhóm đối tượng của nhân viên vận hành) để giữ lại **19 yêu cầu chức năng cốt lõi**, phản ánh đúng và đủ nghiệp vụ trong đề bài mà không rời rạc hóa quá mức.
+
 | ID | Module | Functional Requirement | Mô tả |
 |---|---|---|---|
-| FR01 | Quản lý tài khoản & xác thực | Đăng ký tài khoản khách hàng | Hệ thống cho phép khách hàng đăng ký tài khoản. |
-| FR02 | Quản lý tài khoản & xác thực | Đăng ký/tạo tài khoản tài xế | Hệ thống cho phép tài xế tự đăng ký hoặc được nhân viên vận hành tạo tài khoản. |
-| FR03 | Quản lý tài khoản & xác thực | Đăng nhập | Hệ thống cho phép khách hàng và tài xế đăng nhập trước khi sử dụng các chức năng yêu cầu tài khoản. |
-| FR04 | Quản lý tài khoản & xác thực | Cập nhật thông tin cá nhân | Hệ thống cho phép khách hàng cập nhật thông tin cá nhân. |
-| FR05 | Quản lý tài xế & phương tiện | Cập nhật hồ sơ, phương tiện và trạng thái hoạt động | Hệ thống cho phép tài xế cập nhật hồ sơ, thông tin phương tiện và trạng thái sẵn sàng nhận chuyến. |
-| FR06 | Đặt xe | Nhập thông tin chuyến | Hệ thống cho phép khách hàng nhập điểm đón, điểm đến và chọn loại xe. |
-| FR07 | Đặt xe | Tạo yêu cầu đặt xe | Hệ thống cho phép khách hàng gửi yêu cầu đặt xe. |
-| FR08 | Đặt xe | Tiếp nhận yêu cầu | Hệ thống tiếp nhận và ghi nhận yêu cầu đặt xe. |
-| FR09 | Tìm kiếm & phân công tài xế | Xác định tài xế phù hợp | Hệ thống xác định các tài xế phù hợp dựa trên vị trí, trạng thái sẵn sàng và tiêu chí vận hành. |
-| FR10 | Tìm kiếm & phân công tài xế | Ưu tiên tài xế | Hệ thống ưu tiên tài xế phù hợp và gần khách hàng. |
-| FR11 | Tìm kiếm & phân công tài xế | Gửi yêu cầu đến tài xế | Hệ thống gửi yêu cầu chuyến đến tài xế phù hợp. |
-| FR12 | Tìm kiếm & phân công tài xế | Xử lý phản hồi tài xế | Hệ thống ghi nhận việc tài xế chấp nhận hoặc từ chối chuyến. |
-| FR13 | Tìm kiếm & phân công tài xế | Tìm tài xế thay thế | Khi tài xế không phản hồi hoặc từ chối, hệ thống tiếp tục tìm tài xế khác mà không yêu cầu khách hàng tạo lại yêu cầu. |
-| FR14 | Tìm kiếm & phân công tài xế | Thông báo không tìm được tài xế | Khi không tìm được tài xế phù hợp, hệ thống thông báo rõ ràng cho khách hàng. |
-| FR15 | Quản lý chuyến đi | Cập nhật trạng thái chuyến | Hệ thống cho phép tài xế cập nhật trạng thái: đã đến điểm đón, đã đón khách, đang di chuyển, hoàn thành chuyến. |
-| FR16 | Quản lý chuyến đi | Cập nhật vị trí tài xế | Hệ thống ghi nhận vị trí tài xế trong quá trình thực hiện chuyến để hỗ trợ tìm tài xế và dự kiến thời gian đến. |
-| FR17 | Quản lý chuyến đi | Theo dõi chuyến | Hệ thống cho phép khách hàng theo dõi trạng thái hiện tại của chuyến. |
-| FR18 | Quản lý chuyến đi | Hiển thị thông tin tài xế | Hệ thống hiển thị thông tin tài xế đã nhận chuyến và thời gian dự kiến tài xế đến. |
-| FR19 | Tính cước & thanh toán | Tính tiền chuyến đi | Hệ thống xác định số tiền khách hàng phải trả dựa trên loại dịch vụ và thông tin chuyến đi. |
-| FR20 | Tính cước & thanh toán | Thanh toán tiền mặt | Hệ thống hỗ trợ khách hàng thanh toán bằng tiền mặt. |
-| FR21 | Tính cước & thanh toán | Thanh toán điện tử | Hệ thống hỗ trợ thanh toán điện tử thông qua nhà cung cấp thanh toán bên ngoài. |
-| FR22 | Tính cước & thanh toán | Ghi nhận kết quả thanh toán | Hệ thống ghi nhận kết quả giao dịch thanh toán. |
-| FR23 | Tính cước & thanh toán | Xử lý thanh toán thất bại | Khi thanh toán điện tử thất bại, hệ thống thông báo cho khách hàng và cho phép xử lý lại theo chính sách doanh nghiệp. |
-| FR24 | Thông báo | Gửi thông báo cho khách hàng | Hệ thống gửi thông báo khi: yêu cầu được tiếp nhận, tài xế nhận chuyến, tài xế đến điểm đón, chuyến hoàn thành, thanh toán có kết quả. |
-| FR25 | Thông báo | Gửi thông báo cho tài xế | Hệ thống gửi thông báo cho tài xế về chuyến mới hoặc thay đổi liên quan đến chuyến đang thực hiện. |
-| FR26 | Lịch sử & đánh giá | Xem lịch sử chuyến | Hệ thống cho phép khách hàng xem lịch sử các chuyến đã thực hiện. |
-| FR27 | Lịch sử & đánh giá | Xem số tiền phải trả | Hệ thống cho phép khách hàng xem số tiền phải trả cho từng chuyến. |
-| FR28 | Lịch sử & đánh giá | Đánh giá tài xế | Hệ thống cho phép khách hàng đánh giá tài xế sau khi chuyến hoàn thành. |
-| FR29 | Quản lý vận hành | Quản lý khách hàng | Nhân viên vận hành xem và quản lý thông tin khách hàng. |
-| FR30 | Quản lý vận hành | Quản lý tài xế | Nhân viên vận hành xem và quản lý thông tin tài xế. |
-| FR31 | Quản lý vận hành | Quản lý phương tiện | Nhân viên vận hành xem và quản lý thông tin phương tiện. |
-| FR32 | Quản lý vận hành | Quản lý chuyến đi | Nhân viên vận hành xem và quản lý thông tin chuyến đi. |
-| FR33 | Quản lý vận hành | Theo dõi chuyến đang diễn ra | Nhân viên vận hành xem danh sách các chuyến đang diễn ra và kiểm tra trạng thái tài xế liên quan. |
-| FR34 | Quản lý vận hành | Xử lý chuyến bị lỗi | Nhân viên vận hành hỗ trợ xử lý các trường hợp chuyến gặp sự cố. |
-| FR35 | Quản lý vận hành | Tra cứu lịch sử giao dịch | Nhân viên vận hành tra cứu lịch sử giao dịch của chuyến đi. |
-| FR36 | Quản lý vận hành | Phân quyền quản trị | Hệ thống kiểm soát quyền truy cập để chỉ nhân viên được phân quyền phù hợp mới thực hiện được các thao tác quản trị nhạy cảm. |
-| FR37 | Báo cáo cơ bản | Báo cáo hoạt động | Hệ thống cung cấp báo cáo về số lượng chuyến, doanh thu, tỷ lệ hoàn thành, tỷ lệ hủy và hiệu quả hoạt động của tài xế. |
+| FR01 | Quản lý tài khoản & xác thực | Đăng ký & đăng nhập | Hệ thống cho phép khách hàng đăng ký tài khoản, tài xế tự đăng ký hoặc được nhân viên vận hành tạo tài khoản; khách hàng và tài xế đăng nhập trước khi sử dụng chức năng yêu cầu tài khoản. |
+| FR02 | Quản lý tài khoản & xác thực | Cập nhật hồ sơ | Hệ thống cho phép khách hàng cập nhật thông tin cá nhân; tài xế cập nhật hồ sơ, thông tin phương tiện và trạng thái sẵn sàng nhận chuyến. |
+| FR03 | Đặt xe | Tạo yêu cầu đặt xe | Hệ thống cho phép khách hàng nhập điểm đón, điểm đến, chọn loại xe và gửi yêu cầu đặt xe; hệ thống tiếp nhận và ghi nhận yêu cầu. |
+| FR04 | Tìm kiếm & phân công tài xế | Xác định & ưu tiên tài xế phù hợp | Hệ thống xác định các tài xế phù hợp dựa trên vị trí, trạng thái sẵn sàng và tiêu chí vận hành, đồng thời ưu tiên tài xế phù hợp và gần khách hàng. |
+| FR05 | Tìm kiếm & phân công tài xế | Gửi yêu cầu & xử lý phản hồi tài xế | Hệ thống gửi yêu cầu chuyến đến tài xế phù hợp và ghi nhận việc tài xế chấp nhận hoặc từ chối. |
+| FR06 | Tìm kiếm & phân công tài xế | Tìm tài xế thay thế | Khi tài xế không phản hồi hoặc từ chối, hệ thống tự động tìm tài xế khác mà không yêu cầu khách hàng tạo lại yêu cầu; nếu không còn tài xế phù hợp, hệ thống thông báo rõ ràng cho khách hàng. |
+| FR07 | Quản lý chuyến đi | Cập nhật trạng thái & vị trí chuyến | Hệ thống cho phép tài xế cập nhật trạng thái chuyến (đã đến điểm đón, đã đón khách, đang di chuyển, hoàn thành) và cập nhật vị trí trong suốt quá trình thực hiện chuyến. |
+| FR08 | Quản lý chuyến đi | Theo dõi chuyến | Hệ thống cho phép khách hàng theo dõi trạng thái hiện tại của chuyến, thông tin tài xế đã nhận chuyến và thời gian dự kiến đến. |
+| FR09 | Tính cước & thanh toán | Tính cước | Hệ thống xác định số tiền khách hàng phải trả dựa trên loại dịch vụ và thông tin chuyến đi. |
+| FR10 | Tính cước & thanh toán | Thanh toán | Hệ thống hỗ trợ khách hàng thanh toán bằng tiền mặt hoặc thanh toán điện tử thông qua nhà cung cấp thanh toán bên ngoài. |
+| FR11 | Tính cước & thanh toán | Ghi nhận & xử lý kết quả thanh toán | Hệ thống ghi nhận kết quả giao dịch thanh toán; khi thanh toán điện tử thất bại, hệ thống thông báo cho khách hàng và cho phép xử lý lại theo chính sách doanh nghiệp. |
+| FR12 | Thông báo | Gửi thông báo | Hệ thống gửi thông báo cho khách hàng (tiếp nhận yêu cầu, tài xế nhận chuyến, tài xế đến điểm đón, hoàn thành chuyến, kết quả thanh toán, không tìm được tài xế) và cho tài xế (chuyến mới hoặc thay đổi liên quan đến chuyến đang thực hiện). |
+| FR13 | Lịch sử & đánh giá | Xem lịch sử & số tiền phải trả | Hệ thống cho phép khách hàng xem lịch sử các chuyến đã thực hiện và số tiền phải trả cho từng chuyến. |
+| FR14 | Lịch sử & đánh giá | Đánh giá tài xế | Hệ thống cho phép khách hàng đánh giá tài xế sau khi chuyến hoàn thành. |
+| FR15 | Quản lý vận hành | Quản lý khách hàng, tài xế, phương tiện | Nhân viên vận hành xem và quản lý thông tin khách hàng, tài xế và phương tiện. |
+| FR16 | Quản lý vận hành | Quản lý & xử lý chuyến đi | Nhân viên vận hành xem, quản lý thông tin chuyến đi, theo dõi các chuyến đang diễn ra, kiểm tra trạng thái tài xế liên quan và hỗ trợ xử lý chuyến gặp sự cố. |
+| FR17 | Quản lý vận hành | Tra cứu lịch sử giao dịch | Nhân viên vận hành tra cứu lịch sử giao dịch của chuyến đi. |
+| FR18 | Quản lý vận hành | Phân quyền quản trị | Hệ thống kiểm soát quyền truy cập để chỉ nhân viên được phân quyền phù hợp mới thực hiện được các thao tác quản trị nhạy cảm. |
+| FR19 | Báo cáo cơ bản | Báo cáo hoạt động | Hệ thống cung cấp báo cáo về số lượng chuyến, doanh thu, tỷ lệ hoàn thành, tỷ lệ hủy và hiệu quả hoạt động của tài xế. |
 
 ---
 
@@ -266,14 +250,14 @@ Các quy tắc nghiệp vụ dưới đây là ràng buộc/điều kiện bắt
 
 | ID | Business Rule | Áp dụng cho | FR/NFR liên quan |
 |---|---|---|---|
-| RL01 | Hệ thống chỉ gửi yêu cầu chuyến cho tài xế đang ở trạng thái sẵn sàng (available) và phù hợp với vị trí/tiêu chí vận hành. | Tìm kiếm & phân công tài xế | FR09, FR10 |
-| RL02 | Tại một thời điểm, hệ thống chỉ gửi yêu cầu chuyến đến một tài xế; nếu tài xế không phản hồi hoặc từ chối, hệ thống tự động chuyển sang tài xế phù hợp tiếp theo mà không yêu cầu khách hàng tạo lại yêu cầu. | Tìm kiếm & phân công tài xế | FR12, FR13 |
-| RL03 | Khách hàng và tài xế phải được xác thực (đăng nhập) trước khi sử dụng bất kỳ chức năng nào yêu cầu tài khoản. | Toàn hệ thống | FR03, NFR05 |
-| RL04 | Thông tin nhạy cảm của thẻ/tài khoản thanh toán không được lưu trực tiếp trong hệ thống CAB; giao dịch điện tử phải được xử lý qua nhà cung cấp thanh toán bên ngoài. | Tính cước & thanh toán | FR21, NFR08 |
-| RL05 | Cước phí chỉ được xác định sau khi chuyến đi hoàn thành, dựa trên loại dịch vụ (loại xe) và thông tin chuyến đi. | Tính cước & thanh toán | FR19 |
-| RL06 | Khách hàng chỉ được phép đánh giá tài xế sau khi chuyến đi đã hoàn thành. | Lịch sử & đánh giá | FR28 |
-| RL07 | Khi thanh toán điện tử thất bại, hệ thống không được ghi nhận chuyến là đã thanh toán; phải thông báo cho khách hàng và cho phép xử lý lại theo chính sách doanh nghiệp. | Tính cước & thanh toán | FR22, FR23 |
-| RL08 | Nhân viên vận hành chỉ được thực hiện thao tác quản trị nhạy cảm khi được phân quyền phù hợp với vai trò. | Quản lý vận hành | FR36, NFR06 |
+| RL01 | Hệ thống chỉ gửi yêu cầu chuyến cho tài xế đang ở trạng thái sẵn sàng (available) và phù hợp với vị trí/tiêu chí vận hành. | Tìm kiếm & phân công tài xế | FR04 |
+| RL02 | Tại một thời điểm, hệ thống chỉ gửi yêu cầu chuyến đến một tài xế; nếu tài xế không phản hồi hoặc từ chối, hệ thống tự động chuyển sang tài xế phù hợp tiếp theo mà không yêu cầu khách hàng tạo lại yêu cầu. | Tìm kiếm & phân công tài xế | FR05, FR06 |
+| RL03 | Khách hàng và tài xế phải được xác thực (đăng nhập) trước khi sử dụng bất kỳ chức năng nào yêu cầu tài khoản. | Toàn hệ thống | FR01, NFR05 |
+| RL04 | Thông tin nhạy cảm của thẻ/tài khoản thanh toán không được lưu trực tiếp trong hệ thống CAB; giao dịch điện tử phải được xử lý qua nhà cung cấp thanh toán bên ngoài. | Tính cước & thanh toán | FR10, NFR08 |
+| RL05 | Cước phí chỉ được xác định sau khi chuyến đi hoàn thành, dựa trên loại dịch vụ (loại xe) và thông tin chuyến đi. | Tính cước & thanh toán | FR09 |
+| RL06 | Khách hàng chỉ được phép đánh giá tài xế sau khi chuyến đi đã hoàn thành. | Lịch sử & đánh giá | FR14 |
+| RL07 | Khi thanh toán điện tử thất bại, hệ thống không được ghi nhận chuyến là đã thanh toán; phải thông báo cho khách hàng và cho phép xử lý lại theo chính sách doanh nghiệp. | Tính cước & thanh toán | FR11 |
+| RL08 | Nhân viên vận hành chỉ được thực hiện thao tác quản trị nhạy cảm khi được phân quyền phù hợp với vai trò. | Quản lý vận hành | FR18, NFR06 |
 | RL09 | Lỗi xảy ra ở module thanh toán hoặc thông báo không được làm gián đoạn quy trình đặt xe và thực hiện chuyến chính. | Toàn hệ thống | NFR03, NFR04 |
 | RL10 | Mọi thao tác quan trọng liên quan đến tài khoản, chuyến đi, thanh toán và phân quyền quản trị phải được lưu vết (audit log) để phục vụ kiểm tra khi cần. | Toàn hệ thống | NFR09 |
 
@@ -450,67 +434,61 @@ flowchart LR
 
     subgraph CAB["CAB System"]
 
-        UC01(["Đăng ký tài khoản (KH)"])
-        UC02(["Đăng ký/tạo tài khoản tài xế"])
-        UC03(["Đăng nhập"])
-        UC04(["Cập nhật thông tin cá nhân"])
-        UC05(["Quản lý hồ sơ & phương tiện tài xế"])
+        UC01(["Đăng ký & đăng nhập"])
+        UC02(["Cập nhật hồ sơ"])
+        UC03(["Đặt xe"])
+        UC04(["Xác định & ưu tiên tài xế"])
+        UC05(["Gửi yêu cầu & xử lý phản hồi tài xế"])
+        UC06(["Tìm tài xế thay thế"])
+        UC07(["Cập nhật trạng thái & vị trí chuyến"])
+        UC08(["Theo dõi chuyến"])
+        UC09(["Tính cước"])
+        UC10(["Thanh toán"])
+        UC11(["Ghi nhận & xử lý kết quả thanh toán"])
+        UC12(["Nhận thông báo"])
+        UC13(["Xem lịch sử & số tiền phải trả"])
+        UC14(["Đánh giá tài xế"])
 
-        UC06(["Đặt xe"])
-        UC07(["Tìm & phân công tài xế"])
-        UC08(["Chấp nhận / Từ chối chuyến"])
-        UC09(["Cập nhật trạng thái chuyến"])
-        UC10(["Theo dõi chuyến đi"])
-
-        UC11(["Tính cước & thanh toán"])
-        UC12(["Xem lịch sử & số tiền phải trả"])
-        UC13(["Đánh giá tài xế"])
-        UC14(["Nhận thông báo"])
-
-        UC15(["Quản lý khách hàng"])
-        UC16(["Quản lý tài xế"])
-        UC17(["Quản lý phương tiện"])
-        UC18(["Quản lý chuyến đi"])
-        UC19(["Theo dõi chuyến đang diễn ra"])
-        UC20(["Xử lý chuyến bị lỗi"])
-        UC21(["Tra cứu lịch sử giao dịch"])
-        UC22(["Phân quyền quản trị"])
-        UC23(["Báo cáo hoạt động"])
+        UC15(["Quản lý khách hàng, tài xế, phương tiện"])
+        UC16(["Quản lý & xử lý chuyến đi"])
+        UC17(["Tra cứu lịch sử giao dịch"])
+        UC18(["Phân quyền quản trị"])
+        UC19(["Báo cáo hoạt động"])
     end
 
     Customer --- UC01
+    Customer --- UC02
     Customer --- UC03
-    Customer --- UC04
-    Customer --- UC06
+    Customer --- UC08
     Customer --- UC10
-    Customer --- UC12
     Customer --- UC13
+    Customer --- UC14
 
+    Driver --- UC01
     Driver --- UC02
-    Driver --- UC03
     Driver --- UC05
-    Driver --- UC08
-    Driver --- UC09
+    Driver --- UC07
 
-    UC06 -.->|include| UC07
-    UC07 -.->|include| UC14
-    UC08 -.->|include| UC14
-    UC09 -.->|include| UC14
-    UC09 -.->|include| UC11
-    UC11 -.->|include| UC14
+    UC03 -.->|include| UC04
+    UC04 -.->|include| UC05
+    UC05 -.->|include| UC06
+    UC05 -.->|include| UC12
+    UC06 -.->|include| UC12
+    UC07 -.->|include| UC12
+    UC07 -.->|include| UC09
+    UC09 -.->|include| UC10
+    UC10 -.->|include| UC11
+    UC11 -.->|include| UC12
 
+    UC10 --- Payment
     UC11 --- Payment
-    UC14 --- Notification
+    UC12 --- Notification
 
     Operator --- UC15
     Operator --- UC16
     Operator --- UC17
     Operator --- UC18
     Operator --- UC19
-    Operator --- UC20
-    Operator --- UC21
-    Operator --- UC22
-    Operator --- UC23
 ```
 
 ---
@@ -519,43 +497,25 @@ flowchart LR
 
 | ID | Functional Requirement | Acceptance Criteria |
 |---|---|---|
-| AC01 | FR01 – Đăng ký tài khoản khách hàng | Khách hàng cung cấp đầy đủ thông tin bắt buộc thì tài khoản được tạo thành công; nếu thiếu/không hợp lệ, hệ thống báo lỗi và không tạo tài khoản. |
-| AC02 | FR02 – Đăng ký/tạo tài khoản tài xế | Tài xế tự đăng ký hoặc được nhân viên vận hành tạo tài khoản thành công khi thông tin hợp lệ. |
-| AC03 | FR03 – Đăng nhập | Người dùng nhập đúng thông tin thì đăng nhập thành công; nếu sai, hệ thống báo lỗi và không cho truy cập chức năng yêu cầu tài khoản. |
-| AC04 | FR04 – Cập nhật thông tin cá nhân | Khách hàng có thể chỉnh sửa và lưu lại thông tin cá nhân; hệ thống lưu thay đổi thành công. |
-| AC05 | FR05 – Cập nhật hồ sơ/phương tiện/trạng thái tài xế | Tài xế có thể cập nhật hồ sơ, phương tiện và trạng thái sẵn sàng; hệ thống ghi nhận thay đổi ngay sau khi lưu. |
-| AC06 | FR06 – Nhập thông tin chuyến | Khách hàng nhập được điểm đón, điểm đến và chọn loại xe trước khi gửi yêu cầu. |
-| AC07 | FR07 – Tạo yêu cầu đặt xe | Khi đủ thông tin chuyến, khách hàng gửi yêu cầu và hệ thống tạo yêu cầu thành công. |
-| AC08 | FR08 – Tiếp nhận yêu cầu | Sau khi yêu cầu được tạo, hệ thống ghi nhận và chuyển sang bước tìm tài xế. |
-| AC09 | FR09 – Xác định tài xế phù hợp | Hệ thống xác định được danh sách tài xế phù hợp dựa trên vị trí, trạng thái sẵn sàng và tiêu chí vận hành đã cấu hình. |
-| AC10 | FR10 – Ưu tiên tài xế | Hệ thống sắp xếp/ưu tiên tài xế phù hợp và gần khách hàng theo tiêu chí vận hành. |
-| AC11 | FR11 – Gửi yêu cầu đến tài xế | Khi tìm được tài xế phù hợp, hệ thống gửi yêu cầu chuyến đến tài xế đó. |
-| AC12 | FR12 – Xử lý phản hồi tài xế | Hệ thống ghi nhận chính xác việc tài xế chấp nhận hoặc từ chối yêu cầu. |
-| AC13 | FR13 – Tìm tài xế thay thế | Khi tài xế không phản hồi hoặc từ chối, hệ thống tự động tìm tài xế khác mà không yêu cầu khách hàng tạo lại yêu cầu. |
-| AC14 | FR14 – Thông báo không tìm được tài xế | Khi không còn tài xế phù hợp, hệ thống thông báo rõ ràng cho khách hàng. |
-| AC15 | FR15 – Cập nhật trạng thái chuyến | Tài xế cập nhật được các trạng thái: đã đến điểm đón, đã đón khách, đang di chuyển, hoàn thành chuyến, theo đúng thứ tự. |
-| AC16 | FR16 – Cập nhật vị trí tài xế | Hệ thống ghi nhận vị trí tài xế trong quá trình thực hiện chuyến. |
-| AC17 | FR17 – Theo dõi chuyến | Khách hàng xem được trạng thái hiện tại của chuyến trong suốt quá trình thực hiện. |
-| AC18 | FR18 – Hiển thị thông tin tài xế | Sau khi tài xế nhận chuyến, khách hàng xem được thông tin tài xế và thời gian dự kiến đến. |
-| AC19 | FR19 – Tính tiền chuyến đi | Sau khi chuyến hoàn thành, hệ thống xác định được số tiền khách hàng phải trả dựa trên loại dịch vụ và thông tin chuyến. |
-| AC20 | FR20 – Thanh toán tiền mặt | Khách hàng chọn phương thức tiền mặt, hệ thống ghi nhận phương thức thanh toán của chuyến. |
-| AC21 | FR21 – Thanh toán điện tử | Khi khách hàng chọn thanh toán điện tử, hệ thống gửi yêu cầu đến nhà cung cấp thanh toán và nhận kết quả giao dịch. |
-| AC22 | FR22 – Ghi nhận kết quả thanh toán | Hệ thống ghi nhận trạng thái giao dịch đúng theo kết quả trả về từ phương thức thanh toán tương ứng. |
-| AC23 | FR23 – Xử lý thanh toán thất bại | Khi thanh toán điện tử thất bại, hệ thống thông báo cho khách hàng và cho phép xử lý lại theo chính sách doanh nghiệp. |
-| AC24 | FR24 – Thông báo khách hàng | Khách hàng nhận được thông báo tại từng mốc: yêu cầu tiếp nhận, tài xế nhận chuyến, tài xế đến điểm đón, hoàn thành chuyến, kết quả thanh toán. |
-| AC25 | FR25 – Thông báo tài xế | Tài xế nhận được thông báo khi có chuyến mới hoặc khi có thay đổi liên quan đến chuyến đang thực hiện. |
-| AC26 | FR26 – Xem lịch sử chuyến | Khách hàng xem được danh sách các chuyến đã thực hiện cùng thông tin liên quan. |
-| AC27 | FR27 – Xem số tiền phải trả | Khách hàng xem được số tiền phải trả sau khi hệ thống hoàn tất tính cước. |
-| AC28 | FR28 – Đánh giá tài xế | Sau khi chuyến hoàn thành, khách hàng thực hiện được đánh giá tài xế. |
-| AC29 | FR29 – Quản lý khách hàng | Nhân viên vận hành xem/cập nhật được thông tin khách hàng theo quyền được cấp. |
-| AC30 | FR30 – Quản lý tài xế | Nhân viên vận hành xem/cập nhật được thông tin tài xế theo quyền được cấp. |
-| AC31 | FR31 – Quản lý phương tiện | Nhân viên vận hành xem/cập nhật được thông tin phương tiện theo quyền được cấp. |
-| AC32 | FR32 – Quản lý chuyến đi | Nhân viên vận hành xem được thông tin và trạng thái của các chuyến đi. |
-| AC33 | FR33 – Theo dõi chuyến đang diễn ra | Nhân viên vận hành xem được danh sách chuyến đang diễn ra và trạng thái tài xế liên quan theo thời gian thực. |
-| AC34 | FR34 – Xử lý chuyến bị lỗi | Nhân viên vận hành thao tác được để hỗ trợ xử lý chuyến gặp sự cố. |
-| AC35 | FR35 – Tra cứu lịch sử giao dịch | Nhân viên vận hành tra cứu được lịch sử giao dịch theo chuyến/khách hàng. |
-| AC36 | FR36 – Phân quyền quản trị | Nhân viên không có quyền phù hợp không thực hiện được thao tác quản trị nhạy cảm; hệ thống từ chối và ghi nhận thao tác. |
-| AC37 | FR37 – Báo cáo hoạt động | Hệ thống xuất được báo cáo số lượng chuyến, doanh thu, tỷ lệ hoàn thành, tỷ lệ hủy và hiệu quả tài xế theo khoảng thời gian yêu cầu. |
+| AC01 | FR01 – Đăng ký & đăng nhập | Khách hàng/tài xế cung cấp đầy đủ thông tin hợp lệ thì tài khoản được tạo hoặc đăng nhập thành công; nếu thiếu/sai thông tin, hệ thống báo lỗi và từ chối truy cập. |
+| AC02 | FR02 – Cập nhật hồ sơ | Khách hàng cập nhật được thông tin cá nhân; tài xế cập nhật được hồ sơ, phương tiện và trạng thái sẵn sàng; hệ thống lưu thay đổi thành công. |
+| AC03 | FR03 – Tạo yêu cầu đặt xe | Khách hàng nhập đủ điểm đón, điểm đến, loại xe và gửi yêu cầu; hệ thống tiếp nhận và ghi nhận yêu cầu thành công. |
+| AC04 | FR04 – Xác định & ưu tiên tài xế phù hợp | Hệ thống xác định và sắp xếp được danh sách tài xế phù hợp dựa trên vị trí, trạng thái sẵn sàng và tiêu chí vận hành. |
+| AC05 | FR05 – Gửi yêu cầu & xử lý phản hồi tài xế | Hệ thống gửi được yêu cầu đến tài xế phù hợp và ghi nhận chính xác việc tài xế chấp nhận hoặc từ chối. |
+| AC06 | FR06 – Tìm tài xế thay thế | Khi tài xế không phản hồi/từ chối, hệ thống tự động tìm tài xế khác mà không yêu cầu khách hàng tạo lại yêu cầu; nếu không còn tài xế phù hợp, hệ thống thông báo rõ ràng cho khách hàng. |
+| AC07 | FR07 – Cập nhật trạng thái & vị trí chuyến | Tài xế cập nhật được các trạng thái theo đúng thứ tự (đến điểm đón, đón khách, di chuyển, hoàn thành) và hệ thống ghi nhận vị trí trong suốt chuyến. |
+| AC08 | FR08 – Theo dõi chuyến | Khách hàng xem được trạng thái hiện tại của chuyến, thông tin tài xế đã nhận chuyến và thời gian dự kiến đến. |
+| AC09 | FR09 – Tính cước | Sau khi chuyến hoàn thành, hệ thống xác định đúng số tiền khách hàng phải trả dựa trên loại dịch vụ và thông tin chuyến. |
+| AC10 | FR10 – Thanh toán | Khách hàng thanh toán được bằng tiền mặt hoặc điện tử; với thanh toán điện tử, hệ thống gửi yêu cầu đến nhà cung cấp và nhận kết quả giao dịch. |
+| AC11 | FR11 – Ghi nhận & xử lý kết quả thanh toán | Hệ thống ghi nhận đúng trạng thái giao dịch; khi thất bại, hệ thống thông báo cho khách hàng và cho phép xử lý lại theo chính sách doanh nghiệp. |
+| AC12 | FR12 – Gửi thông báo | Khách hàng và tài xế nhận được thông báo đúng thời điểm cho từng sự kiện liên quan (tiếp nhận yêu cầu, tài xế nhận chuyến, đến điểm đón, hoàn thành, kết quả thanh toán, không tìm được tài xế, chuyến mới/thay đổi). |
+| AC13 | FR13 – Xem lịch sử & số tiền phải trả | Khách hàng xem được danh sách các chuyến đã thực hiện và số tiền phải trả tương ứng cho từng chuyến. |
+| AC14 | FR14 – Đánh giá tài xế | Sau khi chuyến hoàn thành, khách hàng thực hiện được đánh giá tài xế; hệ thống không cho đánh giá khi chuyến chưa hoàn thành. |
+| AC15 | FR15 – Quản lý khách hàng, tài xế, phương tiện | Nhân viên vận hành xem/cập nhật được thông tin khách hàng, tài xế, phương tiện theo quyền được cấp. |
+| AC16 | FR16 – Quản lý & xử lý chuyến đi | Nhân viên vận hành xem được thông tin, trạng thái chuyến đang diễn ra theo thời gian thực và thao tác được để hỗ trợ xử lý chuyến gặp sự cố. |
+| AC17 | FR17 – Tra cứu lịch sử giao dịch | Nhân viên vận hành tra cứu được lịch sử giao dịch theo chuyến/khách hàng. |
+| AC18 | FR18 – Phân quyền quản trị | Nhân viên không có quyền phù hợp không thực hiện được thao tác quản trị nhạy cảm; hệ thống từ chối và ghi nhận thao tác. |
+| AC19 | FR19 – Báo cáo hoạt động | Hệ thống xuất được báo cáo số lượng chuyến, doanh thu, tỷ lệ hoàn thành, tỷ lệ hủy và hiệu quả tài xế theo khoảng thời gian yêu cầu. |
 
 ---
 
@@ -564,39 +524,22 @@ flowchart LR
 | BG | BR | BPM/Module | FR | UC | AC |
 |---|---|---|---|---|---|
 | BG1 | BR01, BR11 | Quản lý tài khoản & xác thực | FR01 – Đăng ký tài khoản KH | UC01 | AC01 |
-| BG1 | BR01, BR11 | Quản lý tài khoản & xác thực | FR02 – Đăng ký/tạo tài khoản tài xế | UC02 | AC02 |
-| BG1 | BR11 | Quản lý tài khoản & xác thực | FR03 – Đăng nhập | UC03 | AC03 |
-| BG3 | BR01 | Quản lý tài khoản & xác thực | FR04 – Cập nhật thông tin cá nhân | UC04 | AC04 |
-| BG1 | BR01 | Quản lý tài xế & phương tiện | FR05 – Cập nhật hồ sơ/phương tiện/trạng thái tài xế | UC05 | AC05 |
-| BG3 | BR01, BR04 | Đặt xe | FR06 – Nhập thông tin chuyến | UC06 | AC06 |
-| BG3 | BR04 | Đặt xe | FR07 – Tạo yêu cầu đặt xe | UC06 | AC07 |
-| BG3 | BR04 | Đặt xe | FR08 – Tiếp nhận yêu cầu | UC06 | AC08 |
-| BG2 | BR03 | Tìm & phân công tài xế | FR09 – Xác định tài xế phù hợp | UC07 | AC09 |
-| BG2 | BR03 | Tìm & phân công tài xế | FR10 – Ưu tiên tài xế | UC07 | AC10 |
-| BG2 | BR03 | Tìm & phân công tài xế | FR11 – Gửi yêu cầu đến tài xế | UC07 | AC11 |
-| BG2 | BR03 | Tìm & phân công tài xế | FR12 – Xử lý phản hồi tài xế | UC08 | AC12 |
-| BG2 | BR03 | Tìm & phân công tài xế | FR13 – Tìm tài xế thay thế | UC07 | AC13 |
-| BG2 | BR03 | Tìm & phân công tài xế | FR14 – Thông báo không tìm được tài xế | UC14 | AC14 |
-| BG3 | BR04, BR05 | Thực hiện chuyến | FR15 – Cập nhật trạng thái chuyến | UC09 | AC15 |
-| BG2 | BR03 | Thực hiện chuyến | FR16 – Cập nhật vị trí tài xế | UC09 | AC16 |
-| BG3 | BR05 | Thực hiện chuyến | FR17 – Theo dõi chuyến | UC10 | AC17 |
-| BG3 | BR05 | Thực hiện chuyến | FR18 – Hiển thị thông tin tài xế | UC10 | AC18 |
-| BG5 | BR06 | Tính cước & thanh toán | FR19 – Tính tiền chuyến đi | UC11 | AC19 |
-| BG5 | BR06 | Tính cước & thanh toán | FR20 – Thanh toán tiền mặt | UC11 | AC20 |
-| BG5 | BR06 | Tính cước & thanh toán | FR21 – Thanh toán điện tử | UC11 | AC21 |
-| BG5 | BR06 | Tính cước & thanh toán | FR22 – Ghi nhận kết quả thanh toán | UC11 | AC22 |
-| BG5 | BR06 | Tính cước & thanh toán | FR23 – Xử lý thanh toán thất bại | UC11 | AC23 |
-| BG3 | BR07 | Thông báo | FR24 – Thông báo khách hàng | UC14 | AC24 |
-| BG3 | BR07 | Thông báo | FR25 – Thông báo tài xế | UC14 | AC25 |
-| BG3 | BR05 | Hoàn tất chuyến | FR26 – Xem lịch sử chuyến | UC12 | AC26 |
-| BG3 | BR05 | Hoàn tất chuyến | FR27 – Xem số tiền phải trả | UC12 | AC27 |
-| BG3 | BR04 | Đánh giá | FR28 – Đánh giá tài xế | UC13 | AC28 |
-| BG4 | BR08 | Quản lý vận hành | FR29 – Quản lý khách hàng | UC15 | AC29 |
-| BG4 | BR08 | Quản lý vận hành | FR30 – Quản lý tài xế | UC16 | AC30 |
-| BG4 | BR08 | Quản lý vận hành | FR31 – Quản lý phương tiện | UC17 | AC31 |
-| BG4 | BR08 | Quản lý vận hành | FR32 – Quản lý chuyến đi | UC18 | AC32 |
-| BG4 | BR08 | Quản lý vận hành | FR33 – Theo dõi chuyến đang diễn ra | UC19 | AC33 |
-| BG4 | BR08 | Quản lý vận hành | FR34 – Xử lý chuyến bị lỗi | UC20 | AC34 |
-| BG4 | BR08 | Quản lý vận hành | FR35 – Tra cứu lịch sử giao dịch | UC21 | AC35 |
-| BG6 | BR11 | Quản lý vận hành | FR36 – Phân quyền quản trị | UC22 | AC36 |
-| BG7 | BR09 | Báo cáo cơ bản | FR37 – Báo cáo hoạt động | UC23 | AC37 |
+| BG1 | BR01, BR11 | Quản lý tài khoản & xác thực | FR01 – Đăng ký & đăng nhập | UC01 | AC01 |
+| BG1 | BR01 | Quản lý tài khoản & xác thực | FR02 – Cập nhật hồ sơ | UC02 | AC02 |
+| BG3 | BR01, BR04 | Đặt xe | FR03 – Tạo yêu cầu đặt xe | UC03 | AC03 |
+| BG2 | BR03 | Tìm & phân công tài xế | FR04 – Xác định & ưu tiên tài xế phù hợp | UC04 | AC04 |
+| BG2 | BR03 | Tìm & phân công tài xế | FR05 – Gửi yêu cầu & xử lý phản hồi tài xế | UC05 | AC05 |
+| BG2 | BR03 | Tìm & phân công tài xế | FR06 – Tìm tài xế thay thế | UC06 | AC06 |
+| BG3 | BR04, BR05 | Thực hiện chuyến | FR07 – Cập nhật trạng thái & vị trí chuyến | UC07 | AC07 |
+| BG3 | BR05 | Thực hiện chuyến | FR08 – Theo dõi chuyến | UC08 | AC08 |
+| BG5 | BR06 | Tính cước & thanh toán | FR09 – Tính cước | UC09 | AC09 |
+| BG5 | BR06 | Tính cước & thanh toán | FR10 – Thanh toán | UC10 | AC10 |
+| BG5 | BR06 | Tính cước & thanh toán | FR11 – Ghi nhận & xử lý kết quả thanh toán | UC11 | AC11 |
+| BG3 | BR07 | Thông báo | FR12 – Gửi thông báo | UC12 | AC12 |
+| BG3 | BR05 | Hoàn tất chuyến | FR13 – Xem lịch sử & số tiền phải trả | UC13 | AC13 |
+| BG3 | BR04 | Đánh giá | FR14 – Đánh giá tài xế | UC14 | AC14 |
+| BG4 | BR08 | Quản lý vận hành | FR15 – Quản lý khách hàng, tài xế, phương tiện | UC15 | AC15 |
+| BG4 | BR08 | Quản lý vận hành | FR16 – Quản lý & xử lý chuyến đi | UC16 | AC16 |
+| BG4 | BR08 | Quản lý vận hành | FR17 – Tra cứu lịch sử giao dịch | UC17 | AC17 |
+| BG6 | BR11 | Quản lý vận hành | FR18 – Phân quyền quản trị | UC18 | AC18 |
+| BG7 | BR09 | Báo cáo cơ bản | FR19 – Báo cáo hoạt động | UC19 | AC19 |
