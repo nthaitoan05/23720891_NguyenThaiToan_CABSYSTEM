@@ -1,0 +1,38 @@
+openapi: 3.0.3
+info:
+  title: CAB System API - Customer Profile
+  description: Quản lý thông tin hồ sơ cá nhân của khách hàng (FR02).
+  version: 1.0.0
+servers:
+  - url: https://api.cabsystem.local/v1
+paths:
+  /customers/me:
+    get:
+      summary: Xem thông tin cá nhân
+      tags: [Customer Profile]
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: "Thành công" }
+    put:
+      summary: Cập nhật thông tin cá nhân
+      tags: [Customer Profile]
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                full_name: { type: string }
+                phone: { type: string }
+                email: { type: string }
+                address: { type: string }
+      responses:
+        '200': { description: "Cập nhật thành công" }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
