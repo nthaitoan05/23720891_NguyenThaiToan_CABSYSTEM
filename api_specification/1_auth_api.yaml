@@ -1,0 +1,58 @@
+openapi: 3.0.3
+info:
+  title: CAB System API - Auth
+  description: Quản lý đăng ký, đăng nhập và xác thực chung (FR01).
+  version: 1.0.0
+servers:
+  - url: https://api.cabsystem.local/v1
+paths:
+  /auth/login:
+    post:
+      summary: Đăng nhập
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username: { type: string }
+                password: { type: string }
+                role: { type: string, enum: [customer, driver, operator] }
+      responses:
+        '200': { description: "Đăng nhập thành công, trả về JWT token" }
+  /auth/register/customer:
+    post:
+      summary: Đăng ký tài khoản khách hàng
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username: { type: string }
+                password: { type: string }
+                full_name: { type: string }
+                phone: { type: string }
+      responses:
+        '201': { description: "Tạo thành công" }
+  /auth/register/driver:
+    post:
+      summary: Đăng ký tài khoản tài xế
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username: { type: string }
+                password: { type: string }
+                full_name: { type: string }
+                license_number: { type: string }
+      responses:
+        '201': { description: "Tạo thành công" }
