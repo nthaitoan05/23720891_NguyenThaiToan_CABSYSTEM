@@ -1,0 +1,48 @@
+openapi: 3.0.3
+info:
+  title: CAB System API - Admin User Management
+  description: "Nhân viên vận hành quản lý Khách hàng, Tài xế và Phương tiện (FR15, FR18)."
+  version: 1.0.0
+servers:
+  - url: https://api.cabsystem.local/v1
+paths:
+  /admin/customers:
+    get:
+      summary: "Lấy danh sách khách hàng"
+      tags: [Admin Users]
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: "Thành công" }
+  /admin/drivers:
+    get:
+      summary: "Lấy danh sách tài xế"
+      tags: [Admin Users]
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: "Thành công" }
+  /admin/drivers/{driverId}/status:
+    put:
+      summary: "Quản trị viên cập nhật trạng thái tài xế (VD: Khóa tài khoản)"
+      tags: [Admin Users]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: driverId
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status: { type: string, enum: [active, inactive, suspended] }
+      responses:
+        '200': { description: "Cập nhật thành công." }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
