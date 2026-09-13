@@ -1,0 +1,62 @@
+openapi: 3.0.3
+info:
+  title: CAB System API - Driver Profile
+  description: Quản lý hồ sơ tài xế, phương tiện và trạng thái (FR02).
+  version: 1.0.0
+servers:
+  - url: https://api.cabsystem.local/v1
+paths:
+  /drivers/me:
+    put:
+      summary: Cập nhật hồ sơ tài xế
+      tags: [Driver Profile]
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                full_name: { type: string }
+                phone: { type: string }
+      responses:
+        '200': { description: "Thành công" }
+  /drivers/me/vehicle:
+    put:
+      summary: Cập nhật thông tin phương tiện
+      tags: [Driver Profile]
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                license_plate: { type: string }
+                vehicle_type: { type: string }
+                brand: { type: string }
+      responses:
+        '200': { description: "Thành công" }
+  /drivers/me/status:
+    put:
+      summary: Cập nhật trạng thái sẵn sàng nhận chuyến
+      tags: [Driver Profile]
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                available: { type: boolean }
+      responses:
+        '200': { description: "Thành công" }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
