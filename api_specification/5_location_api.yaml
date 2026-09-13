@@ -1,0 +1,43 @@
+openapi: 3.0.3
+info:
+  title: CAB System API - Location Tracking
+  description: Quản lý cập nhật và theo dõi vị trí tài xế theo thời gian thực (FR07, FR08).
+  version: 1.0.0
+servers:
+  - url: https://api.cabsystem.local/v1
+paths:
+  /locations/driver:
+    post:
+      summary: Cập nhật vị trí hiện tại (Dành cho tài xế)
+      tags: [Location]
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                latitude: { type: number, format: float }
+                longitude: { type: number, format: float }
+      responses:
+        '200': { description: "Cập nhật thành công" }
+  /locations/driver/{driverId}:
+    get:
+      summary: Lấy vị trí hiện tại của tài xế (Dành cho KH theo dõi chuyến)
+      tags: [Location]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: driverId
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200': 
+          description: "Tọa độ mới nhất của tài xế"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
