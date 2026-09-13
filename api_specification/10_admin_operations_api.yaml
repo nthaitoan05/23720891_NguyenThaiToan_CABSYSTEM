@@ -1,0 +1,54 @@
+openapi: 3.0.3
+info:
+  title: CAB System API - Admin Operations & Reports
+  description: Nhân viên vận hành quản lý chuyến đi, xử lý sự cố, xem giao dịch và báo cáo (FR16, FR17, FR19).
+  version: 1.0.0
+servers:
+  - url: https://api.cabsystem.local/v1
+paths:
+  /admin/trips:
+    get:
+      summary: Theo dõi danh sách chuyến đi (có thể lọc theo trạng thái)
+      tags: [Admin Operations]
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: "Thành công" }
+  /admin/trips/{tripId}/resolve:
+    post:
+      summary: Xử lý chuyến đi bị lỗi/sự cố
+      tags: [Admin Operations]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: tripId
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200': { description: "Xử lý thành công." }
+  /admin/payments:
+    get:
+      summary: Tra cứu lịch sử giao dịch toàn hệ thống
+      tags: [Admin Operations]
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: "Thành công" }
+  /admin/reports:
+    get:
+      summary: Trích xuất báo cáo hoạt động (số chuyến, doanh thu, tỷ lệ hoàn thành)
+      tags: [Admin Operations]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: start_date
+          in: query
+          schema: { type: string, format: date }
+        - name: end_date
+          in: query
+          schema: { type: string, format: date }
+      responses:
+        '200': { description: "Trả về số liệu báo cáo" }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
