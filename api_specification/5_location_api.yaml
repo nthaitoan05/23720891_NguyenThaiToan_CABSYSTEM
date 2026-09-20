@@ -1,43 +1,88 @@
 openapi: 3.0.3
 info:
-  title: CAB System API - Location Tracking
-  description: Quản lý cập nhật và theo dõi vị trí tài xế theo thời gian thực (FR07, FR08).
+  title: CAB System - Location API
+  description: Ghi nhận vị trí tài xế theo thời gian thực, phục vụ tìm tài xế gần khách hàng và tính thời
+    gian dự kiến đến (FR07). Tách riêng khỏi Trip API do tần suất cập nhật rất cao (mỗi vài giây), cần
+    khả năng mở rộng độc lập (NFR02).
   version: 1.0.0
 servers:
-  - url: https://api.cabsystem.local/v1
+- url: https://api.cabsystem.com/v1
+  description: Production
+- url: https://api.staging.cabsystem.com/v1
+  description: Staging
+tags:
+- name: Location
+  description: Vị trí tài xế theo thời gian thực (FR07).
+security:
+- bearerAuth: []
 paths:
-  /locations/driver:
-    post:
-      summary: Cập nhật vị trí hiện tại (Dành cho tài xế)
-      tags: [Location]
-      security: [{ bearerAuth: [] }]
+  /drivers/{driverId}/location:
+    put:
+      tags:
+      - Driver
+      summary: Cập nhật vị trí hiện tại của tài xế
+      description: FR07 - Cập nhật trạng thái & vị trí chuyến. Hỗ trợ tìm tài xế gần khách hàng và tính
+        ETA.
+      parameters:
+      - $ref: '#/components/parameters/DriverId'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                latitude: { type: number, format: float }
-                longitude: { type: number, format: float }
+              $ref: '#/components/schemas/Location'
       responses:
-        '200': { description: "Cập nhật thành công" }
-  /locations/driver/{driverId}:
-    get:
-      summary: Lấy vị trí hiện tại của tài xế (Dành cho KH theo dõi chuyến)
-      tags: [Location]
-      security: [{ bearerAuth: [] }]
-      parameters:
-        - name: driverId
-          in: path
-          required: true
-          schema: { type: integer }
-      responses:
-        '200': 
-          description: "Tọa độ mới nhất của tài xế"
+        '204':
+          description: Đã cập nhật vị trí
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+      description: 'Áp dụng cho toàn bộ API yêu cầu tài khoản (NFR05). Vai trò (customer, driver, operator_basic,
+        operator_admin) được kiểm tra qua claim trong JWT để kiểm soát quyền truy cập (NFR06, Business
+        Rule RL08).
+
+        '
+  parameters:
+    DriverId:
+      name: driverId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  responses:
+    BadRequest:
+      description: Dữ liệu đầu vào không hợp lệ
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Không tìm thấy tài nguyên
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Location:
+      type: object
+      required:
+      - latitude
+      - longitude
+      properties:
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
