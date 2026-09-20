@@ -1,48 +1,434 @@
 openapi: 3.0.3
 info:
-  title: CAB System API - Admin User Management
-  description: "Nhân viên vận hành quản lý Khách hàng, Tài xế và Phương tiện (FR15, FR18)."
+  title: CAB System - Admin Users API
+  description: Nhân viên vận hành quản lý tài khoản khách hàng, tài xế và phương tiện (FR15).
   version: 1.0.0
 servers:
-  - url: https://api.cabsystem.local/v1
+- url: https://api.cabsystem.com/v1
+  description: Production
+- url: https://api.staging.cabsystem.com/v1
+  description: Staging
+tags:
+- name: Admin - Customers
+  description: Quản lý khách hàng (FR15).
+- name: Admin - Drivers
+  description: Quản lý tài xế (FR15).
+- name: Admin - Vehicles
+  description: Quản lý phương tiện (FR15).
+security:
+- bearerAuth: []
 paths:
-  /admin/customers:
+  /operator/customers:
     get:
-      summary: "Lấy danh sách khách hàng"
-      tags: [Admin Users]
-      security: [{ bearerAuth: [] }]
+      tags:
+      - Operator
+      summary: Xem danh sách khách hàng
+      description: FR15 - Quản lý khách hàng, tài xế, phương tiện.
       responses:
-        '200': { description: "Thành công" }
-  /admin/drivers:
+        '200':
+          description: Danh sách khách hàng
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Customer'
+  /operator/customers/{customerId}:
     get:
-      summary: "Lấy danh sách tài xế"
-      tags: [Admin Users]
-      security: [{ bearerAuth: [] }]
-      responses:
-        '200': { description: "Thành công" }
-  /admin/drivers/{driverId}/status:
-    put:
-      summary: "Quản trị viên cập nhật trạng thái tài xế (VD: Khóa tài khoản)"
-      tags: [Admin Users]
-      security: [{ bearerAuth: [] }]
+      tags:
+      - Operator
+      summary: Xem chi tiết một khách hàng
+      description: FR15 - Quản lý khách hàng, tài xế, phương tiện.
       parameters:
-        - name: driverId
-          in: path
-          required: true
-          schema: { type: integer }
+      - $ref: '#/components/parameters/CustomerId'
+      responses:
+        '200':
+          description: Thông tin khách hàng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+      - Operator
+      summary: Cập nhật/khóa thông tin khách hàng
+      description: FR15 - Quản lý khách hàng, tài xế, phương tiện.
+      parameters:
+      - $ref: '#/components/parameters/CustomerId'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                status: { type: string, enum: [active, inactive, suspended] }
+              $ref: '#/components/schemas/CustomerUpdateRequest'
       responses:
-        '200': { description: "Cập nhật thành công." }
+        '200':
+          description: Cập nhật thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - Operator
+      summary: Vô hiệu hóa tài khoản khách hàng
+      description: FR15 - Quản lý khách hàng, tài xế, phương tiện.
+      parameters:
+      - $ref: '#/components/parameters/CustomerId'
+      responses:
+        '204':
+          description: Vô hiệu hóa tài khoản thành công
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /operator/drivers:
+    get:
+      tags:
+      - Operator
+      summary: Xem danh sách tài xế
+      description: FR15 - Quản lý khách hàng, tài xế, phương tiện.
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - active
+          - inactive
+          - suspended
+      responses:
+        '200':
+          description: Danh sách tài xế
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Driver'
+    post:
+      tags:
+      - Operator
+      summary: Tạo tài khoản tài xế thay cho tài xế
+      description: FR15 - Quản lý khách hàng, tài xế, phương tiện (tài xế được nhân viên vận hành tạo
+        tài khoản, xem FR01).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DriverRegisterRequest'
+      responses:
+        '201':
+          description: Tạo tài khoản tài xế thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Driver'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /operator/drivers/{driverId}:
+    get:
+      tags:
+      - Operator
+      summary: Xem chi tiết một tài xế
+      description: FR15 - Quản lý khách hàng, tài xế, phương tiện.
+      parameters:
+      - $ref: '#/components/parameters/DriverId'
+      responses:
+        '200':
+          description: Thông tin tài xế
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Driver'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+      - Operator
+      summary: Cập nhật/khóa thông tin tài xế
+      description: FR15 - Quản lý khách hàng, tài xế, phương tiện.
+      parameters:
+      - $ref: '#/components/parameters/DriverId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DriverUpdateRequest'
+      responses:
+        '200':
+          description: Cập nhật thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Driver'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - Operator
+      summary: Vô hiệu hóa tài khoản tài xế
+      description: FR15 - Quản lý khách hàng, tài xế, phương tiện.
+      parameters:
+      - $ref: '#/components/parameters/DriverId'
+      responses:
+        '204':
+          description: Vô hiệu hóa tài khoản thành công
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /operator/vehicles:
+    get:
+      tags:
+      - Operator
+      summary: Xem danh sách phương tiện
+      description: FR15 - Quản lý khách hàng, tài xế, phương tiện.
+      responses:
+        '200':
+          description: Danh sách phương tiện
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Vehicle'
+  /operator/vehicles/{vehicleId}:
+    get:
+      tags:
+      - Operator
+      summary: Xem chi tiết một phương tiện
+      description: FR15 - Quản lý khách hàng, tài xế, phương tiện.
+      parameters:
+      - $ref: '#/components/parameters/VehicleId'
+      responses:
+        '200':
+          description: Thông tin phương tiện
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vehicle'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+      - Operator
+      summary: Cập nhật/khóa thông tin phương tiện
+      description: FR15 - Quản lý khách hàng, tài xế, phương tiện.
+      parameters:
+      - $ref: '#/components/parameters/VehicleId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VehicleRequest'
+      responses:
+        '200':
+          description: Cập nhật thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vehicle'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - Operator
+      summary: Gỡ bỏ phương tiện khỏi hệ thống
+      description: FR15 - Quản lý khách hàng, tài xế, phương tiện.
+      parameters:
+      - $ref: '#/components/parameters/VehicleId'
+      responses:
+        '204':
+          description: Gỡ bỏ phương tiện thành công
+        '404':
+          $ref: '#/components/responses/NotFound'
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+      description: 'Áp dụng cho toàn bộ API yêu cầu tài khoản (NFR05). Vai trò (customer, driver, operator_basic,
+        operator_admin) được kiểm tra qua claim trong JWT để kiểm soát quyền truy cập (NFR06, Business
+        Rule RL08).
+
+        '
+  parameters:
+    VehicleId:
+      name: vehicleId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    DriverId:
+      name: driverId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    CustomerId:
+      name: customerId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  responses:
+    NotFound:
+      description: Không tìm thấy tài nguyên
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: Dữ liệu đầu vào không hợp lệ
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Customer:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        fullName:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        address:
+          type: string
+        status:
+          type: string
+          enum:
+          - active
+          - locked
+        createdAt:
+          type: string
+          format: date-time
+    DriverRegisterRequest:
+      type: object
+      required:
+      - fullName
+      - phone
+      - password
+      - licenseNumber
+      properties:
+        fullName:
+          type: string
+        phone:
+          type: string
+        password:
+          type: string
+          format: password
+        licenseNumber:
+          type: string
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+    CustomerUpdateRequest:
+      type: object
+      properties:
+        fullName:
+          type: string
+        email:
+          type: string
+          format: email
+        address:
+          type: string
+    VehicleRequest:
+      type: object
+      required:
+      - licensePlate
+      - vehicleType
+      properties:
+        licensePlate:
+          type: string
+        vehicleType:
+          type: string
+          example: 4-seat
+        brand:
+          type: string
+        model:
+          type: string
+    DriverUpdateRequest:
+      type: object
+      properties:
+        fullName:
+          type: string
+        phone:
+          type: string
+        licenseNumber:
+          type: string
+    Driver:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        fullName:
+          type: string
+        phone:
+          type: string
+        licenseNumber:
+          type: string
+        status:
+          type: string
+          enum:
+          - active
+          - inactive
+          - suspended
+        available:
+          type: boolean
+        currentLocation:
+          $ref: '#/components/schemas/Location'
+        vehicle:
+          $ref: '#/components/schemas/Vehicle'
+    Location:
+      type: object
+      required:
+      - latitude
+      - longitude
+      properties:
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+    Vehicle:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        driverId:
+          type: string
+          format: uuid
+        licensePlate:
+          type: string
+        vehicleType:
+          type: string
+          example: 4-seat
+        brand:
+          type: string
+        model:
+          type: string
+        status:
+          type: string
+          enum:
+          - active
+          - inactive
