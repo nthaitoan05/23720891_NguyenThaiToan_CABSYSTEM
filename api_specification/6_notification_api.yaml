@@ -1,0 +1,181 @@
+openapi: 3.0.3
+info:
+  title: CAB System - Notification API
+  description: Gửi và quản lý thông báo cho khách hàng và tài xế trong suốt quy trình đặt xe, thực hiện
+    chuyến và thanh toán (FR12). Được các service khác (Trip, Payment, Matching) gọi đến khi có sự kiện
+    cần thông báo.
+  version: 1.0.0
+servers:
+- url: https://api.cabsystem.com/v1
+  description: Production
+- url: https://api.staging.cabsystem.com/v1
+  description: Staging
+tags:
+- name: Notifications
+  description: Thông báo cho khách hàng & tài xế (FR12).
+security:
+- bearerAuth: []
+paths:
+  /customers/{customerId}/notifications:
+    get:
+      tags:
+      - Notifications
+      summary: Xem danh sách thông báo của khách hàng
+      description: 'FR12 - Gửi thông báo. Bao gồm các sự kiện: tiếp nhận yêu cầu, tài xế nhận chuyến,
+        tài xế đến điểm đón, hoàn thành chuyến, kết quả thanh toán, không tìm được tài xế.
+
+        '
+      parameters:
+      - $ref: '#/components/parameters/CustomerId'
+      responses:
+        '200':
+          description: Danh sách thông báo
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+  /drivers/{driverId}/notifications:
+    get:
+      tags:
+      - Notifications
+      summary: Xem danh sách thông báo của tài xế
+      description: 'FR12 - Gửi thông báo. Bao gồm: chuyến mới, thay đổi liên quan đến chuyến đang thực
+        hiện.'
+      parameters:
+      - $ref: '#/components/parameters/DriverId'
+      responses:
+        '200':
+          description: Danh sách thông báo
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+  /notifications/{notificationId}:
+    patch:
+      tags:
+      - Notifications
+      summary: Đánh dấu thông báo đã đọc
+      description: FR12 - Gửi thông báo.
+      parameters:
+      - $ref: '#/components/parameters/NotificationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - isRead
+              properties:
+                isRead:
+                  type: boolean
+      responses:
+        '200':
+          description: Cập nhật trạng thái đã đọc thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - Notifications
+      summary: Xóa thông báo
+      description: FR12 - Gửi thông báo.
+      parameters:
+      - $ref: '#/components/parameters/NotificationId'
+      responses:
+        '204':
+          description: Xóa thông báo thành công
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Áp dụng cho toàn bộ API yêu cầu tài khoản (NFR05). Vai trò (customer, driver, operator_basic,
+        operator_admin) được kiểm tra qua claim trong JWT để kiểm soát quyền truy cập (NFR06, Business
+        Rule RL08).
+
+        '
+  parameters:
+    NotificationId:
+      name: notificationId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    DriverId:
+      name: driverId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    CustomerId:
+      name: customerId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  responses:
+    NotFound:
+      description: Không tìm thấy tài nguyên
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: Dữ liệu đầu vào không hợp lệ
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        tripId:
+          type: string
+          format: uuid
+          nullable: true
+        type:
+          type: string
+          enum:
+          - request_received
+          - driver_assigned
+          - driver_arrived
+          - trip_completed
+          - payment_result
+          - no_driver_found
+          - new_trip_offer
+          - trip_updated
+        channel:
+          type: string
+          example: push
+        message:
+          type: string
+        isRead:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
