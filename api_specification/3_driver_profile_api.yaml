@@ -1,62 +1,314 @@
 openapi: 3.0.3
 info:
-  title: CAB System API - Driver Profile
-  description: Quản lý hồ sơ tài xế, phương tiện và trạng thái (FR02).
+  title: CAB System - Driver Profile API
+  description: Quản lý hồ sơ, phương tiện và trạng thái sẵn sàng của tài xế (FR02).
   version: 1.0.0
 servers:
-  - url: https://api.cabsystem.local/v1
+- url: https://api.cabsystem.com/v1
+  description: Production
+- url: https://api.staging.cabsystem.com/v1
+  description: Staging
+tags:
+- name: Driver Profile
+  description: Hồ sơ & phương tiện tài xế (FR02).
+security:
+- bearerAuth: []
 paths:
-  /drivers/me:
+  /drivers/{driverId}:
+    get:
+      tags:
+      - Driver
+      summary: Xem hồ sơ tài xế
+      description: FR02 - Cập nhật hồ sơ.
+      parameters:
+      - $ref: '#/components/parameters/DriverId'
+      responses:
+        '200':
+          description: Thông tin tài xế
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Driver'
+        '404':
+          $ref: '#/components/responses/NotFound'
     put:
+      tags:
+      - Driver
       summary: Cập nhật hồ sơ tài xế
-      tags: [Driver Profile]
-      security: [{ bearerAuth: [] }]
+      description: FR02 - Cập nhật hồ sơ.
+      parameters:
+      - $ref: '#/components/parameters/DriverId'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                full_name: { type: string }
-                phone: { type: string }
+              $ref: '#/components/schemas/DriverUpdateRequest'
       responses:
-        '200': { description: "Thành công" }
-  /drivers/me/vehicle:
+        '200':
+          description: Cập nhật thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Driver'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /drivers/{driverId}/vehicles:
+    get:
+      tags:
+      - Driver
+      summary: Xem danh sách phương tiện của tài xế
+      description: FR02 - Cập nhật hồ sơ.
+      parameters:
+      - $ref: '#/components/parameters/DriverId'
+      responses:
+        '200':
+          description: Danh sách phương tiện
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Vehicle'
+    post:
+      tags:
+      - Driver
+      summary: Thêm phương tiện mới
+      description: FR02 - Cập nhật hồ sơ.
+      parameters:
+      - $ref: '#/components/parameters/DriverId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VehicleRequest'
+      responses:
+        '201':
+          description: Thêm phương tiện thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vehicle'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /drivers/{driverId}/vehicles/{vehicleId}:
+    get:
+      tags:
+      - Driver
+      summary: Xem chi tiết phương tiện
+      description: FR02 - Cập nhật hồ sơ.
+      parameters:
+      - $ref: '#/components/parameters/DriverId'
+      - $ref: '#/components/parameters/VehicleId'
+      responses:
+        '200':
+          description: Thông tin phương tiện
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vehicle'
+        '404':
+          $ref: '#/components/responses/NotFound'
     put:
+      tags:
+      - Driver
       summary: Cập nhật thông tin phương tiện
-      tags: [Driver Profile]
-      security: [{ bearerAuth: [] }]
+      description: FR02 - Cập nhật hồ sơ.
+      parameters:
+      - $ref: '#/components/parameters/DriverId'
+      - $ref: '#/components/parameters/VehicleId'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                license_plate: { type: string }
-                vehicle_type: { type: string }
-                brand: { type: string }
+              $ref: '#/components/schemas/VehicleRequest'
       responses:
-        '200': { description: "Thành công" }
-  /drivers/me/status:
+        '200':
+          description: Cập nhật phương tiện thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vehicle'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - Driver
+      summary: Xóa phương tiện
+      description: FR02 - Cập nhật hồ sơ.
+      parameters:
+      - $ref: '#/components/parameters/DriverId'
+      - $ref: '#/components/parameters/VehicleId'
+      responses:
+        '204':
+          description: Xóa phương tiện thành công
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Không thể xóa phương tiện đang được sử dụng cho chuyến đi đang diễn ra
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /drivers/{driverId}/availability:
     put:
+      tags:
+      - Driver
       summary: Cập nhật trạng thái sẵn sàng nhận chuyến
-      tags: [Driver Profile]
-      security: [{ bearerAuth: [] }]
+      description: 'FR02 - Cập nhật hồ sơ (Business Rule RL01: chỉ tài xế ''available'' mới được phân
+        công chuyến).'
+      parameters:
+      - $ref: '#/components/parameters/DriverId'
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
+              required:
+              - available
               properties:
-                available: { type: boolean }
+                available:
+                  type: boolean
+                  description: true = sẵn sàng nhận chuyến, false = ngừng nhận chuyến
       responses:
-        '200': { description: "Thành công" }
+        '200':
+          description: Cập nhật trạng thái thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Driver'
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+      description: 'Áp dụng cho toàn bộ API yêu cầu tài khoản (NFR05). Vai trò (customer, driver, operator_basic,
+        operator_admin) được kiểm tra qua claim trong JWT để kiểm soát quyền truy cập (NFR06, Business
+        Rule RL08).
+
+        '
+  parameters:
+    VehicleId:
+      name: vehicleId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    DriverId:
+      name: driverId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  responses:
+    NotFound:
+      description: Không tìm thấy tài nguyên
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: Dữ liệu đầu vào không hợp lệ
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+    VehicleRequest:
+      type: object
+      required:
+      - licensePlate
+      - vehicleType
+      properties:
+        licensePlate:
+          type: string
+        vehicleType:
+          type: string
+          example: 4-seat
+        brand:
+          type: string
+        model:
+          type: string
+    DriverUpdateRequest:
+      type: object
+      properties:
+        fullName:
+          type: string
+        phone:
+          type: string
+        licenseNumber:
+          type: string
+    Driver:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        fullName:
+          type: string
+        phone:
+          type: string
+        licenseNumber:
+          type: string
+        status:
+          type: string
+          enum:
+          - active
+          - inactive
+          - suspended
+        available:
+          type: boolean
+        currentLocation:
+          $ref: '#/components/schemas/Location'
+        vehicle:
+          $ref: '#/components/schemas/Vehicle'
+    Location:
+      type: object
+      required:
+      - latitude
+      - longitude
+      properties:
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+    Vehicle:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        driverId:
+          type: string
+          format: uuid
+        licensePlate:
+          type: string
+        vehicleType:
+          type: string
+          example: 4-seat
+        brand:
+          type: string
+        model:
+          type: string
+        status:
+          type: string
+          enum:
+          - active
+          - inactive
