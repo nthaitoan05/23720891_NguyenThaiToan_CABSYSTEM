@@ -1,0 +1,364 @@
+openapi: 3.0.3
+info:
+  title: CAB System - Trip API
+  description: 'Toàn bộ vòng đời một chuyến đi: tạo yêu cầu đặt xe, tìm/ưu tiên tài xế, tài xế phản hồi,
+    tìm tài xế thay thế, cập nhật trạng thái, theo dõi và hủy chuyến (FR03, FR04, FR05, FR06, FR07-trạng
+    thái, FR08).'
+  version: 1.0.0
+servers:
+- url: https://api.cabsystem.com/v1
+  description: Production
+- url: https://api.staging.cabsystem.com/v1
+  description: Staging
+tags:
+- name: Trip
+  description: Tạo, xem, hủy yêu cầu đặt xe (FR03, FR08).
+- name: Matching (Internal)
+  description: Tìm & phân công tài xế - nội bộ (FR04, FR06).
+- name: Trip Status
+  description: Tài xế phản hồi & cập nhật trạng thái chuyến (FR05, FR07).
+security:
+- bearerAuth: []
+paths:
+  /trips:
+    post:
+      tags:
+      - Customer
+      summary: Tạo yêu cầu đặt xe
+      description: 'FR03 - Tạo yêu cầu đặt xe. Khách hàng nhập điểm đón, điểm đến, chọn loại xe và gửi
+        yêu cầu; hệ thống tiếp nhận yêu cầu và kích hoạt quy trình tìm tài xế (nội bộ, xem Internal Services
+        - FR04).
+
+        '
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TripRequest'
+      responses:
+        '201':
+          description: Yêu cầu đặt xe đã được tạo, hệ thống bắt đầu tìm tài xế
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trip'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /trips/{tripId}:
+    get:
+      tags:
+      - Customer
+      summary: Theo dõi trạng thái chuyến đi
+      description: 'FR08 - Theo dõi chuyến. Trả về trạng thái hiện tại của chuyến, thông tin tài xế đã
+        nhận chuyến (nếu có) và thời gian dự kiến đến (ETA).
+
+        '
+      parameters:
+      - $ref: '#/components/parameters/TripId'
+      responses:
+        '200':
+          description: Thông tin chuyến đi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trip'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - Customer
+      summary: Hủy yêu cầu đặt xe
+      description: 'FR03 - Tạo yêu cầu đặt xe. Cho phép khách hàng hủy chuyến khi còn ở trạng thái sớm
+        (requested, finding_driver, driver_assigned). Chính sách hủy chi tiết (phí hủy, mốc thời gian
+        cho phép) là điểm cần xác nhận thêm với khách hàng (Open Question OQ04).
+
+        '
+      parameters:
+      - $ref: '#/components/parameters/TripId'
+      responses:
+        '204':
+          description: Hủy chuyến thành công
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Chuyến đi đã ở trạng thái không thể hủy (đã đón khách/hoàn thành)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /internal/matching/find-driver:
+    post:
+      tags:
+      - Internal Services
+      summary: Xác định & ưu tiên tài xế phù hợp cho chuyến đi
+      description: 'FR04 - Xác định & ưu tiên tài xế phù hợp. Được Trip Service gọi ngay sau khi chuyến
+        đi được tạo (POST /trips). Trả về danh sách tài xế đã ưu tiên theo vị trí và trạng thái sẵn sàng
+        (Business Rule RL01).
+
+        '
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - tripId
+              - pickupLocation
+              - vehicleType
+              properties:
+                tripId:
+                  type: string
+                  format: uuid
+                pickupLocation:
+                  $ref: '#/components/schemas/Location'
+                vehicleType:
+                  type: string
+      responses:
+        '200':
+          description: Danh sách tài xế phù hợp, đã sắp xếp theo độ ưu tiên
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    driverId:
+                      type: string
+                      format: uuid
+                    priorityScore:
+                      type: number
+        '404':
+          description: Không tìm thấy tài xế phù hợp (FR06 sẽ được kích hoạt để thông báo khách hàng)
+  /internal/matching/next-driver:
+    post:
+      tags:
+      - Internal Services
+      summary: Tìm tài xế thay thế
+      description: 'FR06 - Tìm tài xế thay thế. Được gọi khi tài xế được đề xuất từ chối hoặc không phản
+        hồi trong thời gian quy định (Business Rule RL02).
+
+        '
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - tripId
+              - excludedDriverIds
+              properties:
+                tripId:
+                  type: string
+                  format: uuid
+                excludedDriverIds:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '200':
+          description: Tài xế thay thế được tìm thấy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  driverId:
+                    type: string
+                    format: uuid
+        '404':
+          description: Không còn tài xế phù hợp - kích hoạt thông báo cho khách hàng (FR12)
+  /trips/{tripId}/response:
+    post:
+      tags:
+      - Driver
+      summary: Chấp nhận hoặc từ chối yêu cầu chuyến
+      description: 'FR05 - Gửi yêu cầu & xử lý phản hồi tài xế. Nếu tài xế từ chối hoặc không phản hồi
+        trong thời gian quy định, hệ thống tự động tìm tài xế thay thế (FR06 - Internal Services).
+
+        '
+      parameters:
+      - $ref: '#/components/parameters/TripId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - driverId
+              - decision
+              properties:
+                driverId:
+                  type: string
+                  format: uuid
+                decision:
+                  type: string
+                  enum:
+                  - accepted
+                  - rejected
+      responses:
+        '200':
+          description: Phản hồi được ghi nhận
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trip'
+        '409':
+          description: Yêu cầu chuyến đã hết hạn hoặc đã được xử lý bởi tài xế khác
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /trips/{tripId}/status:
+    put:
+      tags:
+      - Driver
+      summary: Cập nhật trạng thái thực hiện chuyến
+      description: 'FR07 - Cập nhật trạng thái & vị trí chuyến. Các trạng thái hợp lệ: arrived_at_pickup
+        -> picked_up -> in_progress -> completed (theo đúng thứ tự).
+
+        '
+      parameters:
+      - $ref: '#/components/parameters/TripId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - status
+              properties:
+                status:
+                  $ref: '#/components/schemas/TripStatus'
+      responses:
+        '200':
+          description: Cập nhật trạng thái thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trip'
+        '400':
+          description: Trạng thái không hợp lệ theo thứ tự quy trình
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Áp dụng cho toàn bộ API yêu cầu tài khoản (NFR05). Vai trò (customer, driver, operator_basic,
+        operator_admin) được kiểm tra qua claim trong JWT để kiểm soát quyền truy cập (NFR06, Business
+        Rule RL08).
+
+        '
+  parameters:
+    TripId:
+      name: tripId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  responses:
+    NotFound:
+      description: Không tìm thấy tài nguyên
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: Dữ liệu đầu vào không hợp lệ
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    TripStatus:
+      type: string
+      enum:
+      - requested
+      - finding_driver
+      - driver_assigned
+      - arrived_at_pickup
+      - picked_up
+      - in_progress
+      - completed
+      - cancelled
+      - no_driver_found
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+    Trip:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        customerId:
+          type: string
+          format: uuid
+        driverId:
+          type: string
+          format: uuid
+          nullable: true
+        vehicleType:
+          type: string
+        pickupLocation:
+          $ref: '#/components/schemas/Location'
+        destination:
+          $ref: '#/components/schemas/Location'
+        status:
+          $ref: '#/components/schemas/TripStatus'
+        estimatedArrivalTime:
+          type: string
+          format: date-time
+          nullable: true
+        fare:
+          type: number
+          nullable: true
+        requestedAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+          nullable: true
+    Location:
+      type: object
+      required:
+      - latitude
+      - longitude
+      properties:
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+    TripRequest:
+      type: object
+      required:
+      - pickupLocation
+      - destination
+      - vehicleType
+      properties:
+        pickupLocation:
+          $ref: '#/components/schemas/Location'
+        destination:
+          $ref: '#/components/schemas/Location'
+        vehicleType:
+          type: string
+          example: 4-seat
