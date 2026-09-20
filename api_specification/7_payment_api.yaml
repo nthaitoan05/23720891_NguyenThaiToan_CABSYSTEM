@@ -1,50 +1,264 @@
 openapi: 3.0.3
 info:
-  title: CAB System API - Payments & Billing
-  description: Tính cước, xử lý thanh toán và nhận webhook kết quả giao dịch (FR09, FR10, FR11).
+  title: CAB System - Payment API
+  description: Tính cước, thanh toán (tiền mặt/điện tử), xử lý kết quả giao dịch và webhook từ nhà cung
+    cấp thanh toán (FR09, FR10, FR11).
   version: 1.0.0
 servers:
-  - url: https://api.cabsystem.local/v1
+- url: https://api.cabsystem.com/v1
+  description: Production
+- url: https://api.staging.cabsystem.com/v1
+  description: Staging
+tags:
+- name: Fare (Internal)
+  description: Tính cước chuyến đi - nội bộ (FR09).
+- name: Payment
+  description: Thanh toán chuyến đi (FR10, FR11).
+- name: Payment Webhook
+  description: Callback từ nhà cung cấp thanh toán (FR11).
+security:
+- bearerAuth: []
 paths:
-  /payments/trips/{tripId}:
+  /internal/trips/{tripId}/calculate-fare:
     post:
-      summary: Khách hàng thanh toán cước phí
-      tags: [Payment]
-      security: [{ bearerAuth: [] }]
+      tags:
+      - Internal Services
+      summary: Tính cước chuyến đi
+      description: 'FR09 - Tính cước. Được gọi ngay sau khi tài xế cập nhật trạng thái "completed" (PUT
+        /trips/{tripId}/status), trước khi khách hàng thanh toán.
+
+        '
       parameters:
-        - name: tripId
-          in: path
-          required: true
-          schema: { type: integer }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                payment_method: { type: string, enum: [cash, digital] }
+      - $ref: '#/components/parameters/TripId'
       responses:
-        '200': { description: "Xử lý thành công (hoặc trả link thanh toán điện tử)." }
-  /payments/webhook:
+        '200':
+          description: Kết quả tính cước
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Fare'
+  /trips/{tripId}/payment:
+    get:
+      tags:
+      - Customer
+      summary: Xem chi tiết thanh toán của chuyến đi
+      description: FR10 - Thanh toán. Xem trạng thái và chi tiết giao dịch thanh toán.
+      parameters:
+      - $ref: '#/components/parameters/TripId'
+      responses:
+        '200':
+          description: Thông tin thanh toán
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '404':
+          $ref: '#/components/responses/NotFound'
     post:
-      summary: Nhận kết quả từ cổng thanh toán bên thứ ba
-      tags: [Payment]
+      tags:
+      - Customer
+      summary: Thực hiện thanh toán cho chuyến đi
+      description: 'FR10 - Thanh toán. Hỗ trợ thanh toán tiền mặt hoặc điện tử qua nhà cung cấp thanh
+        toán bên ngoài. Không lưu trực tiếp thông tin thẻ/tài khoản thanh toán nhạy cảm trong hệ thống
+        (NFR08, Business Rule RL04).
+
+        '
+      parameters:
+      - $ref: '#/components/parameters/TripId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+      responses:
+        '202':
+          description: 'Yêu cầu thanh toán đã được tiếp nhận. Với thanh toán điện tử, kết quả giao dịch
+            sẽ được cập nhật bất đồng bộ (xem FR11 - Internal Services / Payment Provider Webhook).
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /trips/{tripId}/payment/retry:
+    post:
+      tags:
+      - Customer
+      summary: Xử lý lại thanh toán điện tử sau khi thất bại
+      description: FR11 - Ghi nhận & xử lý kết quả thanh toán (Business Rule RL07).
+      parameters:
+      - $ref: '#/components/parameters/TripId'
+      responses:
+        '202':
+          description: Yêu cầu thanh toán lại đã được tiếp nhận
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Chuyến đi đã được thanh toán thành công trước đó
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /webhooks/payments/callback:
+    post:
+      tags:
+      - Payment Provider Webhook
+      summary: Nhận kết quả giao dịch từ nhà cung cấp thanh toán
+      description: 'FR11 - Ghi nhận & xử lý kết quả thanh toán. Nhà cung cấp thanh toán bên ngoài gọi
+        endpoint này để trả kết quả giao dịch điện tử. Khi thất bại, hệ thống kích hoạt thông báo cho
+        khách hàng (FR12, Business Rule RL07).
+
+        '
+      security:
+      - webhookSignature: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
+              required:
+              - transactionReference
+              - tripId
+              - status
               properties:
-                transaction_reference: { type: string }
-                status: { type: string, enum: [success, failed] }
-                amount: { type: number }
+                transactionReference:
+                  type: string
+                tripId:
+                  type: string
+                  format: uuid
+                status:
+                  type: string
+                  enum:
+                  - success
+                  - failed
+                amount:
+                  type: number
+                failureReason:
+                  type: string
       responses:
-        '200': { description: "Đã ghi nhận kết quả." }
+        '200':
+          description: Đã tiếp nhận kết quả giao dịch
+        '400':
+          description: Payload không hợp lệ
+        '401':
+          description: Chữ ký webhook không hợp lệ
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+      description: 'Áp dụng cho toàn bộ API yêu cầu tài khoản (NFR05). Vai trò (customer, driver, operator_basic,
+        operator_admin) được kiểm tra qua claim trong JWT để kiểm soát quyền truy cập (NFR06, Business
+        Rule RL08).
+
+        '
+    webhookSignature:
+      type: apiKey
+      in: header
+      name: X-Payment-Signature
+      description: Chữ ký HMAC do nhà cung cấp thanh toán ký, dùng để xác thực webhook.
+  parameters:
+    TripId:
+      name: tripId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  responses:
+    NotFound:
+      description: Không tìm thấy tài nguyên
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: Dữ liệu đầu vào không hợp lệ
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+    Payment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        tripId:
+          type: string
+          format: uuid
+        method:
+          type: string
+          enum:
+          - cash
+          - e_wallet
+          - credit_card
+        amount:
+          type: number
+        status:
+          type: string
+          enum:
+          - pending
+          - success
+          - failed
+        transactionReference:
+          type: string
+          nullable: true
+        failureReason:
+          type: string
+          nullable: true
+        paidAt:
+          type: string
+          format: date-time
+          nullable: true
+    PaymentRequest:
+      type: object
+      required:
+      - method
+      properties:
+        method:
+          type: string
+          enum:
+          - cash
+          - e_wallet
+          - credit_card
+        paymentToken:
+          type: string
+          description: 'Token giao dịch do nhà cung cấp thanh toán bên ngoài cấp (không chứa thông tin
+            thẻ/tài khoản nhạy cảm - NFR08).
+
+            '
+    Fare:
+      type: object
+      properties:
+        tripId:
+          type: string
+          format: uuid
+        amount:
+          type: number
+        currency:
+          type: string
+          example: VND
+        breakdown:
+          type: object
+          additionalProperties:
+            type: number
