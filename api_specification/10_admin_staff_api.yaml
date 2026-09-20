@@ -1,0 +1,223 @@
+openapi: 3.0.3
+info:
+  title: CAB System - Admin Staff & Roles API
+  description: Quản lý tài khoản nhân viên vận hành và phân quyền truy cập nội bộ (FR18, NFR06). Tách
+    riêng khỏi Admin Users API vì đây là bounded context về danh tính & quyền truy cập nội bộ (IAM), không
+    phải dữ liệu nghiệp vụ khách hàng/tài xế.
+  version: 1.0.0
+servers:
+- url: https://api.cabsystem.com/v1
+  description: Production
+- url: https://api.staging.cabsystem.com/v1
+  description: Staging
+tags:
+- name: Admin - Staff
+  description: Tài khoản & phân quyền nhân viên vận hành (FR18).
+security:
+- bearerAuth: []
+paths:
+  /operator/staff:
+    get:
+      tags:
+      - Operator
+      summary: Xem danh sách nhân viên vận hành
+      description: FR18 - Phân quyền quản trị.
+      responses:
+        '200':
+          description: Danh sách nhân viên vận hành
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Staff'
+    post:
+      tags:
+      - Operator
+      summary: Tạo tài khoản nhân viên vận hành
+      description: 'FR18 - Phân quyền quản trị. Chỉ nhân viên có quyền quản trị (operator_admin) mới được
+        tạo tài khoản nhân viên mới (NFR06, Business Rule RL08).
+
+        '
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffRequest'
+      responses:
+        '201':
+          description: Tạo tài khoản nhân viên thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Staff'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          description: Người gọi không có quyền thực hiện thao tác này
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /operator/staff/{staffId}:
+    get:
+      tags:
+      - Operator
+      summary: Xem chi tiết một nhân viên vận hành
+      description: FR18 - Phân quyền quản trị.
+      parameters:
+      - $ref: '#/components/parameters/StaffId'
+      responses:
+        '200':
+          description: Thông tin nhân viên
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Staff'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - Operator
+      summary: Vô hiệu hóa tài khoản nhân viên vận hành
+      description: FR18 - Phân quyền quản trị (NFR06, Business Rule RL08).
+      parameters:
+      - $ref: '#/components/parameters/StaffId'
+      responses:
+        '204':
+          description: Vô hiệu hóa tài khoản thành công
+        '403':
+          description: Người gọi không có quyền thực hiện thao tác này
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /operator/staff/{staffId}/roles:
+    put:
+      tags:
+      - Operator
+      summary: Phân quyền cho nhân viên vận hành
+      description: 'FR18 - Phân quyền quản trị (NFR06, Business Rule RL08). Chỉ nhân viên có quyền quản
+        trị mới được gọi API này.
+
+        '
+      parameters:
+      - $ref: '#/components/parameters/StaffId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - roles
+              properties:
+                roles:
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                    - operator_basic
+                    - operator_admin
+                    - finance_viewer
+      responses:
+        '200':
+          description: Cập nhật phân quyền thành công
+        '403':
+          description: Người gọi không có quyền thực hiện thao tác này
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Áp dụng cho toàn bộ API yêu cầu tài khoản (NFR05). Vai trò (customer, driver, operator_basic,
+        operator_admin) được kiểm tra qua claim trong JWT để kiểm soát quyền truy cập (NFR06, Business
+        Rule RL08).
+
+        '
+  parameters:
+    StaffId:
+      name: staffId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  responses:
+    NotFound:
+      description: Không tìm thấy tài nguyên
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: Dữ liệu đầu vào không hợp lệ
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+    Staff:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        fullName:
+          type: string
+        username:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+            enum:
+            - operator_basic
+            - operator_admin
+            - finance_viewer
+        status:
+          type: string
+          enum:
+          - active
+          - inactive
+        createdAt:
+          type: string
+          format: date-time
+    StaffRequest:
+      type: object
+      required:
+      - fullName
+      - username
+      - password
+      - roles
+      properties:
+        fullName:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+          format: password
+        roles:
+          type: array
+          items:
+            type: string
+            enum:
+            - operator_basic
+            - operator_admin
+            - finance_viewer
