@@ -1,58 +1,264 @@
 openapi: 3.0.3
 info:
-  title: CAB System API - Auth
-  description: Quản lý đăng ký, đăng nhập và xác thực chung (FR01).
+  title: CAB System - Auth API
+  description: Đăng ký tài khoản và xác thực cho Khách hàng và Tài xế (FR01, NFR05).
   version: 1.0.0
 servers:
-  - url: https://api.cabsystem.local/v1
+- url: https://api.cabsystem.com/v1
+  description: Production
+- url: https://api.staging.cabsystem.com/v1
+  description: Staging
+tags:
+- name: Auth
+  description: Đăng ký & đăng nhập (FR01).
+security:
+- bearerAuth: []
 paths:
+  /customers/register:
+    post:
+      tags:
+      - Customer
+      summary: Đăng ký tài khoản khách hàng
+      description: FR01 - Đăng ký & đăng nhập. Khách hàng tự đăng ký tài khoản.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerRegisterRequest'
+      responses:
+        '201':
+          description: Tạo tài khoản thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: Email/số điện thoại đã tồn tại
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /drivers/register:
+    post:
+      tags:
+      - Driver
+      summary: Đăng ký tài khoản tài xế
+      description: FR01 - Đăng ký & đăng nhập. Tài xế tự đăng ký; có thể được nhân viên vận hành tạo thay
+        (xem Operator - FR15).
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DriverRegisterRequest'
+      responses:
+        '201':
+          description: Tạo tài khoản tài xế thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Driver'
+        '400':
+          $ref: '#/components/responses/BadRequest'
   /auth/login:
     post:
-      summary: Đăng nhập
-      tags: [Auth]
+      tags:
+      - Customer
+      - Driver
+      summary: Đăng nhập (khách hàng hoặc tài xế)
+      description: FR01 - Đăng ký & đăng nhập. Xác thực người dùng trước khi sử dụng các chức năng yêu
+        cầu tài khoản (NFR05).
+      security: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                username: { type: string }
-                password: { type: string }
-                role: { type: string, enum: [customer, driver, operator] }
+              $ref: '#/components/schemas/LoginRequest'
       responses:
-        '200': { description: "Đăng nhập thành công, trả về JWT token" }
-  /auth/register/customer:
-    post:
-      summary: Đăng ký tài khoản khách hàng
-      tags: [Auth]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                username: { type: string }
-                password: { type: string }
-                full_name: { type: string }
-                phone: { type: string }
-      responses:
-        '201': { description: "Tạo thành công" }
-  /auth/register/driver:
-    post:
-      summary: Đăng ký tài khoản tài xế
-      tags: [Auth]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                username: { type: string }
-                password: { type: string }
-                full_name: { type: string }
-                license_number: { type: string }
-      responses:
-        '201': { description: "Tạo thành công" }
+        '200':
+          description: Đăng nhập thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthToken'
+        '401':
+          description: Sai thông tin đăng nhập
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Áp dụng cho toàn bộ API yêu cầu tài khoản (NFR05). Vai trò (customer, driver, operator_basic,
+        operator_admin) được kiểm tra qua claim trong JWT để kiểm soát quyền truy cập (NFR06, Business
+        Rule RL08).
+
+        '
+  parameters: {}
+  responses:
+    BadRequest:
+      description: Dữ liệu đầu vào không hợp lệ
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Không tìm thấy tài nguyên
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Customer:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        fullName:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        address:
+          type: string
+        status:
+          type: string
+          enum:
+          - active
+          - locked
+        createdAt:
+          type: string
+          format: date-time
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+    CustomerRegisterRequest:
+      type: object
+      required:
+      - fullName
+      - phone
+      - password
+      properties:
+        fullName:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+    LoginRequest:
+      type: object
+      required:
+      - username
+      - password
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+          format: password
+    DriverRegisterRequest:
+      type: object
+      required:
+      - fullName
+      - phone
+      - password
+      - licenseNumber
+      properties:
+        fullName:
+          type: string
+        phone:
+          type: string
+        password:
+          type: string
+          format: password
+        licenseNumber:
+          type: string
+    Driver:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        fullName:
+          type: string
+        phone:
+          type: string
+        licenseNumber:
+          type: string
+        status:
+          type: string
+          enum:
+          - active
+          - inactive
+          - suspended
+        available:
+          type: boolean
+        currentLocation:
+          $ref: '#/components/schemas/Location'
+        vehicle:
+          $ref: '#/components/schemas/Vehicle'
+    Location:
+      type: object
+      required:
+      - latitude
+      - longitude
+      properties:
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+    Vehicle:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        driverId:
+          type: string
+          format: uuid
+        licensePlate:
+          type: string
+        vehicleType:
+          type: string
+          example: 4-seat
+        brand:
+          type: string
+        model:
+          type: string
+        status:
+          type: string
+          enum:
+          - active
+          - inactive
+    AuthToken:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        tokenType:
+          type: string
+          example: Bearer
+        expiresIn:
+          type: integer
