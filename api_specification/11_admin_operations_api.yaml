@@ -1,0 +1,326 @@
+openapi: 3.0.3
+info:
+  title: CAB System - Admin Operations API
+  description: Nhân viên vận hành theo dõi/xử lý chuyến đi, tra cứu giao dịch và xem báo cáo hoạt động
+    (FR16, FR17, FR19).
+  version: 1.0.0
+servers:
+- url: https://api.cabsystem.com/v1
+  description: Production
+- url: https://api.staging.cabsystem.com/v1
+  description: Staging
+tags:
+- name: Admin - Trips
+  description: Theo dõi & xử lý chuyến đi (FR16).
+- name: Admin - Transactions
+  description: Tra cứu lịch sử giao dịch (FR17).
+- name: Admin - Reports
+  description: Báo cáo hoạt động (FR19).
+security:
+- bearerAuth: []
+paths:
+  /operator/trips:
+    get:
+      tags:
+      - Operator
+      summary: Xem danh sách chuyến đi
+      description: FR16 - Quản lý & xử lý chuyến đi.
+      parameters:
+      - name: status
+        in: query
+        schema:
+          $ref: '#/components/schemas/TripStatus'
+      - name: from
+        in: query
+        schema:
+          type: string
+          format: date-time
+      - name: to
+        in: query
+        schema:
+          type: string
+          format: date-time
+      responses:
+        '200':
+          description: Danh sách chuyến đi
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Trip'
+  /operator/trips/ongoing:
+    get:
+      tags:
+      - Operator
+      summary: Xem danh sách chuyến đang diễn ra theo thời gian thực
+      description: FR16 - Quản lý & xử lý chuyến đi. Bao gồm trạng thái tài xế liên quan.
+      responses:
+        '200':
+          description: Danh sách chuyến đang diễn ra
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Trip'
+  /operator/trips/{tripId}/resolve:
+    post:
+      tags:
+      - Operator
+      summary: Xử lý chuyến đi gặp sự cố
+      description: FR16 - Quản lý & xử lý chuyến đi (Exception EX05).
+      parameters:
+      - $ref: '#/components/parameters/TripId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - action
+              - note
+              properties:
+                action:
+                  type: string
+                  enum:
+                  - reassign_driver
+                  - cancel_trip
+                  - manual_complete
+                  - refund
+                note:
+                  type: string
+      responses:
+        '200':
+          description: Chuyến đi đã được xử lý
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trip'
+  /operator/transactions:
+    get:
+      tags:
+      - Operator
+      summary: Tra cứu lịch sử giao dịch thanh toán
+      description: FR17 - Tra cứu lịch sử giao dịch.
+      parameters:
+      - name: tripId
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: customerId
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - pending
+          - success
+          - failed
+      responses:
+        '200':
+          description: Danh sách giao dịch
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Payment'
+  /operator/reports:
+    get:
+      tags:
+      - Operator
+      summary: Xem báo cáo hoạt động hệ thống
+      description: 'FR19 - Báo cáo hoạt động. Bao gồm số lượng chuyến, doanh thu, tỷ lệ hoàn thành, tỷ
+        lệ hủy và hiệu quả hoạt động của tài xế.
+
+        '
+      parameters:
+      - name: from
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Báo cáo hoạt động
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationalReport'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Áp dụng cho toàn bộ API yêu cầu tài khoản (NFR05). Vai trò (customer, driver, operator_basic,
+        operator_admin) được kiểm tra qua claim trong JWT để kiểm soát quyền truy cập (NFR06, Business
+        Rule RL08).
+
+        '
+  parameters:
+    TripId:
+      name: tripId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  responses:
+    BadRequest:
+      description: Dữ liệu đầu vào không hợp lệ
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Không tìm thấy tài nguyên
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    TripStatus:
+      type: string
+      enum:
+      - requested
+      - finding_driver
+      - driver_assigned
+      - arrived_at_pickup
+      - picked_up
+      - in_progress
+      - completed
+      - cancelled
+      - no_driver_found
+    Trip:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        customerId:
+          type: string
+          format: uuid
+        driverId:
+          type: string
+          format: uuid
+          nullable: true
+        vehicleType:
+          type: string
+        pickupLocation:
+          $ref: '#/components/schemas/Location'
+        destination:
+          $ref: '#/components/schemas/Location'
+        status:
+          $ref: '#/components/schemas/TripStatus'
+        estimatedArrivalTime:
+          type: string
+          format: date-time
+          nullable: true
+        fare:
+          type: number
+          nullable: true
+        requestedAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+          nullable: true
+    Location:
+      type: object
+      required:
+      - latitude
+      - longitude
+      properties:
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+    Payment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        tripId:
+          type: string
+          format: uuid
+        method:
+          type: string
+          enum:
+          - cash
+          - e_wallet
+          - credit_card
+        amount:
+          type: number
+        status:
+          type: string
+          enum:
+          - pending
+          - success
+          - failed
+        transactionReference:
+          type: string
+          nullable: true
+        failureReason:
+          type: string
+          nullable: true
+        paidAt:
+          type: string
+          format: date-time
+          nullable: true
+    OperationalReport:
+      type: object
+      properties:
+        periodFrom:
+          type: string
+          format: date
+        periodTo:
+          type: string
+          format: date
+        totalTrips:
+          type: integer
+        totalRevenue:
+          type: number
+        completionRate:
+          type: number
+          description: Tỷ lệ hoàn thành (%)
+        cancellationRate:
+          type: number
+          description: Tỷ lệ hủy (%)
+        topDrivers:
+          type: array
+          items:
+            type: object
+            properties:
+              driverId:
+                type: string
+                format: uuid
+              completedTrips:
+                type: integer
+              averageRating:
+                type: number
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
