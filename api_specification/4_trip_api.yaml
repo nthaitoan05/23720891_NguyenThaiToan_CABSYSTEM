@@ -1,4 +1,9 @@
 openapi: 3.0.3
+x-design-rules:
+  source: ../srs.md
+  sections: [15, 16]
+  status: coursework-design-decisions
+  description: Quy tắc thiết kế cho bài tại SRS mục 15; chưa phải xác nhận thực tế của khách hàng.
 info:
   title: CAB System - Trip API
   description: 'Toàn bộ vòng đời một chuyến đi: tạo yêu cầu đặt xe, tìm/ưu tiên tài xế, tài xế phản hồi,
@@ -45,6 +50,24 @@ paths:
                 $ref: '#/components/schemas/Trip'
         '400':
           $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Thông tin xác thực hoặc chữ ký không hợp lệ.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền thực hiện thao tác.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột trạng thái hoặc dữ liệu theo SRS mục 15.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /trips/{tripId}:
     get:
       tags:
@@ -65,13 +88,30 @@ paths:
                 $ref: '#/components/schemas/Trip'
         '404':
           $ref: '#/components/responses/NotFound'
+        '400':
+          description: Dữ liệu không hợp lệ theo DR01/DR02.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Thông tin xác thực hoặc chữ ký không hợp lệ.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền thực hiện thao tác.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     delete:
       tags:
       - Customer
       summary: Hủy yêu cầu đặt xe
       description: 'FR03 - Tạo yêu cầu đặt xe. Cho phép khách hàng hủy chuyến khi còn ở trạng thái sớm
-        (requested, finding_driver, driver_assigned). Chính sách hủy chi tiết (phí hủy, mốc thời gian
-        cho phép) là điểm cần xác nhận thêm với khách hàng (Open Question OQ04).
+        (requested, finding_driver, driver_assigned). Áp dụng DR03 trong SRS mục 15.3: khách hàng hủy miễn phí ở requested, finding_driver hoặc driver_assigned; từ arrived_at_pickup trả 409.
 
         '
       parameters:
@@ -83,6 +123,24 @@ paths:
           $ref: '#/components/responses/NotFound'
         '409':
           description: Chuyến đi đã ở trạng thái không thể hủy (đã đón khách/hoàn thành)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '400':
+          description: Dữ liệu không hợp lệ theo DR01/DR02.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Thông tin xác thực hoặc chữ ký không hợp lệ.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền thực hiện thao tác.
           content:
             application/json:
               schema:
@@ -111,10 +169,14 @@ paths:
                 tripId:
                   type: string
                   format: uuid
+                  minLength: 36
+                  maxLength: 36
+                  pattern: '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$'
                 pickupLocation:
                   $ref: '#/components/schemas/Location'
                 vehicleType:
                   type: string
+                  enum: [4-seat, 7-seat]
       responses:
         '200':
           description: Danh sách tài xế phù hợp, đã sắp xếp theo độ ưu tiên
@@ -128,10 +190,31 @@ paths:
                     driverId:
                       type: string
                       format: uuid
+                      minLength: 36
+                      maxLength: 36
+                      pattern: '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$'
                     priorityScore:
                       type: number
         '404':
           description: Không tìm thấy tài xế phù hợp (FR06 sẽ được kích hoạt để thông báo khách hàng)
+        '400':
+          description: Dữ liệu không hợp lệ theo DR01/DR02.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Thông tin xác thực hoặc chữ ký không hợp lệ.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền thực hiện thao tác.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /internal/matching/next-driver:
     post:
       tags:
@@ -154,11 +237,17 @@ paths:
                 tripId:
                   type: string
                   format: uuid
+                  minLength: 36
+                  maxLength: 36
+                  pattern: '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$'
                 excludedDriverIds:
                   type: array
                   items:
                     type: string
                     format: uuid
+                    minLength: 36
+                    maxLength: 36
+                    pattern: '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$'
       responses:
         '200':
           description: Tài xế thay thế được tìm thấy
@@ -170,8 +259,29 @@ paths:
                   driverId:
                     type: string
                     format: uuid
+                    minLength: 36
+                    maxLength: 36
+                    pattern: '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$'
         '404':
           description: Không còn tài xế phù hợp - kích hoạt thông báo cho khách hàng (FR12)
+        '400':
+          description: Dữ liệu không hợp lệ theo DR01/DR02.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Thông tin xác thực hoặc chữ ký không hợp lệ.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền thực hiện thao tác.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /trips/{tripId}/response:
     post:
       tags:
@@ -196,6 +306,9 @@ paths:
                 driverId:
                   type: string
                   format: uuid
+                  minLength: 36
+                  maxLength: 36
+                  pattern: '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$'
                 decision:
                   type: string
                   enum:
@@ -210,6 +323,30 @@ paths:
                 $ref: '#/components/schemas/Trip'
         '409':
           description: Yêu cầu chuyến đã hết hạn hoặc đã được xử lý bởi tài xế khác
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '400':
+          description: Dữ liệu không hợp lệ theo DR01/DR02.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Thông tin xác thực hoặc chữ ký không hợp lệ.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền thực hiện thao tác.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không tìm thấy đối tượng hoặc dữ liệu được yêu cầu.
           content:
             application/json:
               schema:
@@ -249,6 +386,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '401':
+          description: Thông tin xác thực hoặc chữ ký không hợp lệ.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền thực hiện thao tác.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không tìm thấy đối tượng hoặc dữ liệu được yêu cầu.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
   securitySchemes:
     bearerAuth:
@@ -268,6 +423,9 @@ components:
       schema:
         type: string
         format: uuid
+        minLength: 36
+        maxLength: 36
+        pattern: '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$'
   responses:
     NotFound:
       description: Không tìm thấy tài nguyên
@@ -307,15 +465,25 @@ components:
         id:
           type: string
           format: uuid
+          minLength: 36
+          maxLength: 36
+          pattern: '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$'
         customerId:
           type: string
           format: uuid
+          minLength: 36
+          maxLength: 36
+          pattern: '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$'
         driverId:
           type: string
           format: uuid
+          minLength: 36
+          maxLength: 36
+          pattern: '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$'
           nullable: true
         vehicleType:
           type: string
+          enum: [4-seat, 7-seat]
         pickupLocation:
           $ref: '#/components/schemas/Location'
         destination:
@@ -344,9 +512,13 @@ components:
       properties:
         latitude:
           type: number
+          minimum: -90
+          maximum: 90
           format: double
         longitude:
           type: number
+          minimum: -180
+          maximum: 180
           format: double
     TripRequest:
       type: object
@@ -361,4 +533,5 @@ components:
           $ref: '#/components/schemas/Location'
         vehicleType:
           type: string
+          enum: [4-seat, 7-seat]
           example: 4-seat

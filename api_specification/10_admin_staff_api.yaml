@@ -1,4 +1,9 @@
 openapi: 3.0.3
+x-design-rules:
+  source: ../srs.md
+  sections: [15, 16]
+  status: coursework-design-decisions
+  description: Quy tắc thiết kế cho bài tại SRS mục 15; chưa phải xác nhận thực tế của khách hàng.
 info:
   title: CAB System - Admin Staff & Roles API
   description: Quản lý tài khoản nhân viên vận hành và phân quyền truy cập nội bộ (FR18, NFR06). Tách
@@ -31,6 +36,24 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Staff'
+        '400':
+          description: Dữ liệu không hợp lệ theo DR01/DR02.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Thông tin xác thực hoặc chữ ký không hợp lệ.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền thực hiện thao tác.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     post:
       tags:
       - Operator
@@ -60,6 +83,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '401':
+          description: Thông tin xác thực hoặc chữ ký không hợp lệ.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /operator/staff/{staffId}:
     get:
       tags:
@@ -77,6 +106,24 @@ paths:
                 $ref: '#/components/schemas/Staff'
         '404':
           $ref: '#/components/responses/NotFound'
+        '400':
+          description: Dữ liệu không hợp lệ theo DR01/DR02.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Thông tin xác thực hoặc chữ ký không hợp lệ.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền thực hiện thao tác.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     delete:
       tags:
       - Operator
@@ -95,6 +142,18 @@ paths:
                 $ref: '#/components/schemas/Error'
         '404':
           $ref: '#/components/responses/NotFound'
+        '400':
+          description: Dữ liệu không hợp lệ theo DR01/DR02.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Thông tin xác thực hoặc chữ ký không hợp lệ.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /operator/staff/{staffId}/roles:
     put:
       tags:
@@ -117,6 +176,9 @@ paths:
               properties:
                 roles:
                   type: array
+                  minItems: 1
+                  maxItems: 3
+                  uniqueItems: true
                   items:
                     type: string
                     enum:
@@ -128,6 +190,24 @@ paths:
           description: Cập nhật phân quyền thành công
         '403':
           description: Người gọi không có quyền thực hiện thao tác này
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '400':
+          description: Dữ liệu không hợp lệ theo DR01/DR02.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Thông tin xác thực hoặc chữ ký không hợp lệ.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không tìm thấy đối tượng hoặc dữ liệu được yêu cầu.
           content:
             application/json:
               schema:
@@ -151,6 +231,9 @@ components:
       schema:
         type: string
         format: uuid
+        minLength: 36
+        maxLength: 36
+        pattern: '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$'
   responses:
     NotFound:
       description: Không tìm thấy tài nguyên
@@ -178,12 +261,24 @@ components:
         id:
           type: string
           format: uuid
+          minLength: 36
+          maxLength: 36
+          pattern: '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$'
         fullName:
           type: string
+          minLength: 1
+          maxLength: 100
+          pattern: '.*\S.*'
         username:
           type: string
+          minLength: 1
+          maxLength: 50
+          pattern: '^[A-Za-z0-9._]+$'
         roles:
           type: array
+          minItems: 1
+          maxItems: 3
+          uniqueItems: true
           items:
             type: string
             enum:
@@ -208,13 +303,24 @@ components:
       properties:
         fullName:
           type: string
+          minLength: 1
+          maxLength: 100
+          pattern: '.*\S.*'
         username:
           type: string
+          minLength: 1
+          maxLength: 50
+          pattern: '^[A-Za-z0-9._]+$'
         password:
           type: string
+          minLength: 8
+          pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9\s]).{8,}$'
           format: password
         roles:
           type: array
+          minItems: 1
+          maxItems: 3
+          uniqueItems: true
           items:
             type: string
             enum:

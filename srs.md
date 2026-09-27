@@ -278,7 +278,9 @@ Các quy tắc nghiệp vụ dưới đây là ràng buộc/điều kiện bắt
 | EX07 | Bảo mật | Người dùng chưa được xác thực | Hệ thống không cho phép khách hàng hoặc tài xế sử dụng chức năng yêu cầu tài khoản khi chưa xác thực. |
 | EX08 | Quản trị | Nhân viên không đủ quyền thực hiện thao tác nhạy cảm | Hệ thống kiểm soát quyền truy cập và ngăn thao tác không được phép. |
 
-## 10.2. Những điểm còn chưa rõ cần xác nhận với khách hàng
+## 10.2. Theo dõi các câu hỏi từ yêu cầu gốc
+
+Các câu hỏi dưới đây được giữ lại để truy vết nguồn yêu cầu. OQ01–OQ04 và OQ07–OQ10 đã có quyết định thiết kế cụ thể cho bài tại mục 15; chưa có xác nhận thực tế từ khách hàng. OQ05/OQ06 tiếp tục để mở vì không thuộc các giả định cần thiết của bộ test hiện tại.
 
 | ID | Chủ đề | Điểm chưa rõ | Câu hỏi cần xác nhận |
 |---|---|---|---|
@@ -543,3 +545,142 @@ flowchart LR
 | BG4 | BR08 | Quản lý vận hành | FR17 – Tra cứu lịch sử giao dịch | UC17 | AC17 |
 | BG6 | BR11 | Quản lý vận hành | FR18 – Phân quyền quản trị | UC18 | AC18 |
 | BG7 | BR09 | Báo cáo cơ bản | FR19 – Báo cáo hoạt động | UC19 | AC19 |
+
+
+---
+
+# 15. Quy tắc thiết kế cụ thể cho phạm vi bài
+
+**Nguồn và trạng thái:** Các quy tắc dưới đây là quyết định thiết kế được bổ sung để đặc tả và kiểm thử nhất quán trong bài CAB System. Chúng không phải nội dung xác nhận mới từ Công ty ABC. Khi triển khai thực tế, cần thống nhất với khách hàng và nhà cung cấp; trong phạm vi bài, dùng các giá trị cụ thể dưới đây thay cho các giả định rải rác trong test case.
+
+## 15.1. Dữ liệu đầu vào — DR01
+
+| Dữ liệu | Quy tắc |
+|---|---|
+| fullName | Chuỗi 1–100 ký tự, không chỉ gồm khoảng trắng. Không tự cắt ngắn giá trị quá dài. |
+| address | Chuỗi tối đa 255 ký tự; cho phép chuỗi rỗng; không bắt buộc khi cập nhật hồ sơ. |
+| username nhân viên | Chuỗi 1–50 ký tự, chỉ dùng chữ cái ASCII, chữ số, dấu chấm và gạch dưới; duy nhất không phân biệt hoa/thường. |
+| password khi đăng ký/tạo tài khoản | Ít nhất 8 ký tự, có ít nhất một chữ hoa, một chữ thường, một chữ số và một ký tự không phải chữ/số/khoảng trắng. Không cắt hoặc xóa khoảng trắng khỏi password. Quy tắc này không thay đổi bài mẫu Login. |
+| phone | Chuỗi đúng 10 chữ số, bắt đầu bằng 0; duy nhất trong nhóm tài khoản cùng loại. Đây là định dạng nhập liệu của bài. |
+| email | Đúng định dạng email; không bắt buộc. Nếu cung cấp, không được rỗng và phải duy nhất trong nhóm khách hàng, không phân biệt hoa/thường. |
+| licenseNumber | Chuỗi 1–30 ký tự gồm chữ cái ASCII, chữ số hoặc dấu gạch nối; duy nhất giữa các tài xế. Đây là mã giấy phép nội bộ của bài, không phải quy định về giấy phép thực tế. |
+| licensePlate | Định dạng của bài: hai chữ số, một chữ cái in hoa, dấu gạch nối, ba chữ số, dấu chấm, hai chữ số; ví dụ 51H-123.45. |
+| vehicleType | Chỉ nhận 4-seat hoặc 7-seat. |
+| UUID | Chuỗi chuẩn có dấu gạch nối, 36 ký tự; sai định dạng trả 400; đúng định dạng nhưng không tìm thấy đối tượng trả 404 khi truy cập đối tượng. |
+| Tọa độ | latitude trong [-90,90], longitude trong [-180,180], gồm cả hai đầu mút. Phạm vi bài không thêm giới hạn địa lý khi tiếp nhận đặt xe; việc có tài xế hay không được xử lý ở matching. |
+| Điểm đánh giá | Số nguyên từ 1 đến 5, gồm hai đầu mút; comment không bắt buộc và được phép rỗng. |
+| roles | Mảng từ 1 đến 3 vai trò khác nhau: operator_basic, operator_admin, finance_viewer. Không nhận mảng rỗng hoặc phần tử trùng. |
+
+Thuộc tính required phải có mặt. Chuỗi bắt buộc nhập như fullName, phone, password, licenseNumber, licensePlate, vehicleType, username, note và token thanh toán không được rỗng. Không nhận null trừ trường được khai báo nullable trong OpenAPI. Sai kiểu dữ liệu trả 400; không tự chuyển chuỗi số thành số hoặc chuỗi true thành boolean.
+
+## 15.2. Cập nhật, tìm kiếm và lỗi API — DR02
+
+- PUT hồ sơ khách hàng/tài xế trong bài hỗ trợ cập nhật một phần: trường không gửi giữ nguyên; body `{}` trả 200 và không thay đổi dữ liệu. Không gửi body khi API yêu cầu body trả 400. Cập nhật phương tiện phải gửi licensePlate và vehicleType như VehicleRequest.
+- Query tùy chọn không gửi sẽ không áp dụng bộ lọc đó. Query đã gửi nhưng có giá trị rỗng bị kiểm tra theo kiểu dữ liệu và trả 400 nếu không hợp lệ. Danh sách không có bản ghi phù hợp trả 200 và `[]`; không trả 404.
+- Lịch sử chuyến: page là số nguyên từ 1, mặc định 1; pageSize là số nguyên 1–100, mặc định 20. Sắp xếp requestedAt giảm dần, nếu bằng nhau thì id tăng dần. Trang sau bản ghi cuối trả danh sách rỗng.
+- Không ghi dữ liệu khi validation thất bại. Thiếu hoặc hết hạn xác thực trả 401; không đủ quyền trả 403. Không tìm thấy tài nguyên/đường dẫn trả 404. Không trả dữ liệu của người khác khi không có quyền.
+- Lỗi định dạng, thiếu trường, giá trị ngoài miền trả 400. Xung đột trạng thái trả 409, trừ các lỗi thanh toán tại POST payment đã được quy định là 400 ở DR07.
+- Trùng phone/email khi khách hàng đăng ký hoặc trùng phone/licenseNumber khi tài xế tự đăng ký trả 409. Tạo tài xế qua operator và tạo nhân viên với dữ liệu trùng trả 400 để giữ hợp đồng API quản trị của bài.
+- Các thao tác cập nhật/xóa chỉ định đối tượng không tồn tại trả 404. Sai quyền có thể được từ chối trước tra cứu dữ liệu; test 404 phải dùng tài khoản đủ quyền và fixture cho phép kiểm tra tài nguyên đó.
+
+## 15.3. Đặt xe, trạng thái và hủy chuyến — DR03, OQ04
+
+Mỗi khách hàng chỉ có tối đa một chuyến chưa kết thúc. requested, finding_driver, driver_assigned, arrived_at_pickup, picked_up và in_progress đều là trạng thái chưa kết thúc. completed, cancelled và no_driver_found là trạng thái kết thúc. Đặt thêm chuyến khi đang có chuyến chưa kết thúc trả 409. Điểm đón trùng điểm đến trả 400.
+
+Luồng thực hiện: requested → finding_driver → driver_assigned → arrived_at_pickup → picked_up → in_progress → completed. Tài xế chỉ cập nhật chuyến của mình và chỉ chuyển sang bước kế tiếp; chuyển lùi, bỏ bước hoặc mở lại chuyến kết thúc trả 400. Việc chấp nhận chuyến do API response xử lý, không dùng API status để tự gán chuyến.
+
+Khách hàng được hủy chuyến của mình ở requested, finding_driver và driver_assigned, không mất phí. Từ arrived_at_pickup trở đi, khách hàng tự hủy bị từ chối 409. Khi hủy thành công, trạng thái là cancelled và tài xế đã được gán nhận thông báo. Vận hành xử lý hủy do sự cố theo DR08, ghi rõ lý do. Mọi chuyển trạng thái phải kiểm tra trạng thái hiện tại một cách nguyên tử để tránh hai kết quả mâu thuẫn.
+
+## 15.4. Tìm tài xế và thời hạn phản hồi — DR04, OQ02/OQ03/OQ08
+
+- Chỉ chọn tài xế active, available=true, có phương tiện active đúng loại xe, không đang thực hiện chuyến và có vị trí hợp lệ. Tài xế không có phương tiện active không được bật available=true (409). Đang chạy chuyến vẫn được đặt available=false; chuyến hiện tại tiếp tục, không nhận chuyến mới.
+- Xét ứng viên trong bán kính 5 km gồm cả khoảng cách đúng 5 km. Trong bài, khoảng cách do dịch vụ vị trí cung cấp, có độ chính xác 0.001 km. priorityScore = 1 / (1 + khoảng cách km); sắp xếp điểm giảm dần, bằng điểm thì driverId tăng dần. Fixture test được mô phỏng khoảng cách để kiểm tra chính xác biên.
+- Chỉ gửi lời mời tới một tài xế tại một thời điểm. Mỗi lời mời có hiệu lực 30 giây; chỉ nhận phản hồi nếu thời điểm server nhận nhỏ hơn expiresAt. Đúng hoặc sau expiresAt trả 409; tìm tài xế tiếp theo một lần duy nhất. Test biên dùng đồng hồ kiểm thử có độ chính xác mili giây.
+- Loại tài xế đã từ chối/hết hạn khỏi các lần tìm tiếp theo của cùng chuyến. Không yêu cầu khách hàng đặt lại chuyến. Dừng khi hết ứng viên, đã mời 5 tài xế hoặc đã tìm đủ 150 giây, tùy điều kiện nào đến trước; chuyển no_driver_found và thông báo khách hàng.
+- Khi hai lời mời từ các chuyến khác nhau cùng được một tài xế chấp nhận, chỉ một lần gán được thành công; lần còn lại trả 409 và tiếp tục matching. Một tài xế không được có hai chuyến chưa kết thúc đã nhận.
+
+## 15.5. Vị trí và theo dõi — DR05, OQ09
+
+Tài xế gửi vị trí mỗi 5 giây khi available=true hoặc đang có chuyến đã nhận chưa kết thúc. Chấp nhận vị trí hợp lệ ngoài chuyến để chuẩn bị bật sẵn sàng. Khi chưa gán tài xế, driverId và estimatedArrivalTime trả null. Khi đã gán, trả driverId và thời gian dự kiến đến do dịch vụ định tuyến cung cấp. Quy định xử lý mất kết nối dài hạn và lưu trữ lịch sử vị trí vẫn thuộc OQ05/OQ06, không được coi là đã xác nhận từ các test hiện có.
+
+## 15.6. Tính cước — DR06, OQ01
+
+Đơn vị tiền tệ VND; chỉ tính cước sau completed. Biểu cước của phạm vi bài:
+
+| Loại xe | Cước cơ bản | Mỗi km | Mỗi phút |
+|---|---|---|---|
+| 4-seat | 10000 | 8000 | 1000 |
+| 7-seat | 15000 | 10000 | 1500 |
+
+Số tiền = cước cơ bản + quãng đường km × giá mỗi km + thời gian phút × giá mỗi phút. Quãng đường không âm, chính xác 0.001 km; thời gian lấy tổng giây từ start_time đến end_time chia 60, không làm tròn từng thành phần. Làm tròn tổng cuối cùng tới VND gần nhất, phần lẻ đúng 0.5 làm tròn lên. Không phụ phí, phí hủy hoặc khuyến mãi trong bài. Lần gọi lại tính cước trả kết quả đã lưu, không tạo thêm cước.
+
+Ví dụ xe 4-seat: 5 km và 10 phút → 60000 VND; 0 km và 0 phút → 10000 VND; 0.001 km và 0 phút → 10008 VND. Các ví dụ là dữ liệu kiểm thử cho biểu cước DR06, không còn là một biểu cước giả lập chưa xác định.
+
+## 15.7. Thanh toán và thử lại — DR07, OQ07
+
+- Khách hàng chủ chuyến gửi yêu cầu thanh toán khi chuyến completed và đã có cước. Chưa completed, chưa có cước hoặc đã thanh toán thành công trả 400; chuyến không tồn tại trả 404; khách hàng khác trả 403.
+- Trong mô hình giản lược của bài, POST payment với method=cash là lời xác nhận của khách hàng đã trả tiền mặt; hệ thống ghi nhận success và trả 202, không có bước xác nhận thu tiền riêng của tài xế. Đây là giới hạn của mô hình bài; không diễn giải là đối soát thu tiền thực tế.
+- e_wallet và credit_card bắt buộc có paymentToken không rỗng, nhận từ NCC. Tại lớp tích hợp của bài, token được kiểm tra đồng bộ; không tồn tại/hết hạn trả 400. Token chỉ hợp lệ trước expiresAt; đúng thời điểm hết hạn bị từ chối. Token hợp lệ trả 202, giao dịch pending, chờ callback. Không lưu dữ liệu thẻ/tài khoản thanh toán nhạy cảm.
+- Chỉ retry khi giao dịch trước failed. Tối đa 3 lần retry sau lần thanh toán đầu, trong 24 giờ kể từ thời điểm thất bại của giao dịch đầu tiên; không gia hạn theo từng lần retry. Lần retry thứ 3 được nhận, lần thứ 4 hoặc tại/sau hết 24 giờ trả 409. Chưa có giao dịch, đang pending hoặc đã success cũng trả 409. Mỗi lần retry hợp lệ tạo một lần thử mới pending; lưu lịch sử lần thử trong thanh toán của chuyến.
+- Callback cần chữ ký hợp lệ; chữ ký sai/thiếu trả 401. Mã chuyến và mã giao dịch phải khớp một lần thử đang tồn tại. Callback success phải có amount bằng chính xác số tiền giao dịch; thiếu hoặc sai amount trả 400 và giữ nguyên giao dịch. Callback failed có thể không gửi amount, ghi nhận failed và thông báo khách hàng.
+- Callback lặp cùng mã giao dịch và cùng kết quả đã xử lý trả 200 nhưng không cập nhật/gửi thông báo thêm. Callback mâu thuẫn với kết quả cuối đã ghi nhận trả 400. Đối chiếu số tiền và chống trùng thực hiện trước khi phát thông báo thành công.
+
+## 15.8. Quyền vận hành và báo cáo — DR08, OQ10
+
+| Thao tác | operator_basic | finance_viewer | operator_admin |
+|---|---|---|---|
+| Xem khách hàng, tài xế, phương tiện, chuyến | Có | Không | Có |
+| Cập nhật thông tin, tạo tài xế, xử lý phân công lại/hủy chuyến sự cố | Có | Không | Có |
+| Vô hiệu hóa tài khoản, gỡ phương tiện, manual_complete, hoàn tiền | Không | Không | Có |
+| Xem giao dịch và báo cáo | Không | Có | Có |
+| Xem/tạo/vô hiệu hóa nhân viên, thay đổi vai trò | Không | Không | Có |
+
+Nhân viên có nhiều vai trò được hợp các quyền. Mọi thao tác nhạy cảm phải lưu người thực hiện, thời gian, đối tượng, hành động và lý do. reassign_driver chỉ áp dụng trước picked_up; cancel_trip áp dụng cho chuyến chưa kết thúc khi vận hành ghi lý do; manual_complete chỉ cho chuyến in_progress; refund chỉ cho khoản đã success và chưa hoàn tiền. Sai trạng thái trả 409; không được thực hiện cùng một hoàn tiền hai lần.
+
+Lọc chuyến theo requestedAt, gồm cả from/to. Tham số ngày giờ dùng ISO 8601 có múi giờ; from > to trả 400. Báo cáo dùng ngày UTC, gồm từ 00:00:00 của from đến trước 00:00:00 ngày sau to; from=to là một ngày.
+
+Báo cáo xét tập chuyến có requestedAt trong khoảng chọn. totalTrips là số chuyến trong tập; totalRevenue là tổng tiền đã success của các chuyến đó trừ phần đã hoàn tiền tại thời điểm lập báo cáo. completionRate = số completed / totalTrips × 100; cancellationRate = số cancelled / totalTrips × 100, làm tròn 2 chữ số thập phân. Khi totalTrips=0, cả hai tỷ lệ bằng 0. topDrivers gồm tối đa 10 tài xế theo số chuyến completed giảm dần, bằng nhau thì doanh thu giảm dần, tiếp tục bằng thì driverId tăng dần.
+
+# 16. Dữ liệu chuẩn bị cho test case
+
+Phần này là hướng dẫn thực hiện kiểm thử, không phải yêu cầu bổ sung của sản phẩm. Các bảng giữ nguyên 8 cột; mỗi scenario tối đa 20 case. Login được giữ nguyên theo mẫu và không nằm trong phạm vi sửa đổi.
+
+## 16.1. Quy ước thực hiện
+
+
+- Mỗi case chạy độc lập trên dữ liệu test được chuẩn bị lại. Case đăng ký thành công dùng phone, username và licenseNumber chưa tồn tại; case trùng dữ liệu chỉ tạo trùng trường đang kiểm tra.
+- A/B là hai người dùng khác nhau thuộc loại đối tượng của scenario; T là chuyến, V là phương tiện, N là thông báo. Thay các ký hiệu bằng UUID thực tế từ fixture trước khi gửi request. Các đối tượng phải có quan hệ sở hữu và trạng thái đúng như Preconditions. Không gửi các chữ `A`, `T`, `driverA` hoặc dấu `...` như UUID thật.
+- Với case thông thường, dùng token còn hiệu lực của đúng chủ sở hữu hoặc nhân viên có quyền. Case sai quyền, thiếu token và token rỗng thay riêng điều kiện xác thực đang kiểm tra. Các API `/internal/` dùng danh tính service được phép gọi.
+- Test Data ghi một phần payload nghĩa là lấy payload hợp lệ bên dưới rồi thay đúng trường được nêu. Khi ghi một JSON object hoàn chỉnh, gửi chính object đó. Tham số trong URL và header được đặt đúng vị trí, không đưa vào JSON body.
+- `không gửi trường này` nghĩa là bỏ hẳn thuộc tính khỏi object hoặc query. `""` là chuỗi rỗng; `null` là giá trị null; `"   "` là ba dấu cách. `{}` là có gửi body chứa object rỗng, khác với không gửi body. Mảng `[]` và kết quả không có bản ghi không đồng nghĩa với thiếu thuộc tính.
+- Mỗi lần chỉ thay một đầu vào cần kiểm tra; giữ các đầu vào khác hợp lệ. Khi một dòng yêu cầu kiểm tra hai thao tác, thực hiện độc lập và chuẩn bị lại dữ liệu trước mỗi thao tác; không dùng kết quả của thao tác đầu để thay đổi điều kiện của thao tác sau.
+- Với request bị từ chối, ngoài HTTP status còn kiểm tra đối tượng mục tiêu không bị tạo/sửa/xóa và không phát sinh giao dịch hoặc thông báo thành công ngoài ý muốn.
+- Case biên thời gian cần đồng hồ server/stub điều khiển được; không dùng thời gian nhấn nút hoặc thời gian gửi từ máy client để kết luận request đã đến đúng biên.
+
+## 16.2. Payload hợp lệ làm nền
+
+Các giá trị định danh bên dưới là ký hiệu fixture, cần thay bằng UUID thực tế. Đổi các giá trị cần duy nhất giữa các case đăng ký.
+
+| Thao tác | Payload nền |
+|---|---|
+| Đăng ký khách hàng | `{"fullName":"Nguyen Van A","phone":"0901234567","email":"a@example.com","password":"Password@123"}` |
+| Đăng ký/tạo tài xế | `{"fullName":"Tran Van B","phone":"0912345678","password":"Password@123","licenseNumber":"B2-123456"}` |
+| Cập nhật khách hàng | `{"fullName":"Nguyen Van A","email":"a@example.com","address":"123 Le Loi"}` |
+| Cập nhật tài xế | `{"fullName":"Tran Van B","phone":"0912345678","licenseNumber":"B2-123456"}` |
+| Thêm/cập nhật phương tiện | `{"licensePlate":"51H-123.45","vehicleType":"4-seat","brand":"Toyota","model":"Vios"}` |
+| Tạo chuyến | `{"pickupLocation":{"latitude":10.776,"longitude":106.700},"destination":{"latitude":10.800,"longitude":106.650},"vehicleType":"4-seat"}` |
+| Tìm tài xế | `{"tripId":"T","pickupLocation":{"latitude":10.776,"longitude":106.700},"vehicleType":"4-seat"}` |
+| Tìm tài xế thay thế | `{"tripId":"T","excludedDriverIds":["A"]}` |
+| Phản hồi chuyến | `{"driverId":"A","decision":"accepted"}` |
+| Trạng thái chuyến | `{"status":"arrived_at_pickup"}`; trạng thái hiện tại trong fixture là `driver_assigned` |
+| Vị trí tài xế | `{"latitude":10.776,"longitude":106.700}` |
+| Sẵn sàng nhận chuyến / đã đọc thông báo | `{"available":true}` / `{"isRead":true}` |
+| Thanh toán tiền mặt | `{"method":"cash"}`; chuyến completed và đã có cước |
+| Thanh toán điện tử | `{"method":"e_wallet","paymentToken":"tok_valid_abc123"}`; stub NCC chấp nhận token; chuyến completed và đã có cước |
+| Webhook thành công | `{"transactionReference":"txn_001","tripId":"T","status":"success","amount":85000}`; giao dịch tương ứng pending, amount=85000; chữ ký được tính lại cho đúng payload mỗi case |
+| Đánh giá | `{"score":3,"comment":"Dich vu tot"}`; chuyến completed, chưa có đánh giá khi kiểm tra tạo mới |
+| Tạo nhân viên | `{"fullName":"Pham Thi Van","username":"van.new","password":"Password@123","roles":["operator_basic"]}` |
+| Phân quyền | `{"roles":["operator_basic"]}` |
+| Xử lý chuyến lỗi | `{"action":"cancel_trip","note":"Xu ly su co chuyen"}`; chuyến thuộc trạng thái cho phép xử lý theo DR08 |
+
+Các case không có body như GET, DELETE, calculate-fare và payment/retry không tự thêm body bắt buộc để tạo tình huống rỗng. Có thể kiểm tra header rỗng hoặc path/query thiếu; ghi rõ URL vì bỏ path parameter có thể chuyển sang route khác.

@@ -1,4 +1,9 @@
 openapi: 3.0.3
+x-design-rules:
+  source: ../srs.md
+  sections: [15, 16]
+  status: coursework-design-decisions
+  description: Quy tắc thiết kế cho bài tại SRS mục 15; chưa phải xác nhận thực tế của khách hàng.
 info:
   title: CAB System - Notification API
   description: Gửi và quản lý thông báo cho khách hàng và tài xế trong suốt quy trình đặt xe, thực hiện
@@ -36,6 +41,30 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Notification'
+        '400':
+          description: Dữ liệu không hợp lệ theo DR01/DR02.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Thông tin xác thực hoặc chữ ký không hợp lệ.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền thực hiện thao tác.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không tìm thấy đối tượng hoặc dữ liệu được yêu cầu.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /drivers/{driverId}/notifications:
     get:
       tags:
@@ -54,6 +83,30 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Notification'
+        '400':
+          description: Dữ liệu không hợp lệ theo DR01/DR02.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Thông tin xác thực hoặc chữ ký không hợp lệ.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền thực hiện thao tác.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không tìm thấy đối tượng hoặc dữ liệu được yêu cầu.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /notifications/{notificationId}:
     patch:
       tags:
@@ -82,6 +135,24 @@ paths:
                 $ref: '#/components/schemas/Notification'
         '404':
           $ref: '#/components/responses/NotFound'
+        '400':
+          description: Dữ liệu không hợp lệ theo DR01/DR02.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Thông tin xác thực hoặc chữ ký không hợp lệ.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền thực hiện thao tác.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     delete:
       tags:
       - Notifications
@@ -94,6 +165,24 @@ paths:
           description: Xóa thông báo thành công
         '404':
           $ref: '#/components/responses/NotFound'
+        '400':
+          description: Dữ liệu không hợp lệ theo DR01/DR02.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Thông tin xác thực hoặc chữ ký không hợp lệ.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền thực hiện thao tác.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
   securitySchemes:
     bearerAuth:
@@ -113,6 +202,9 @@ components:
       schema:
         type: string
         format: uuid
+        minLength: 36
+        maxLength: 36
+        pattern: '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$'
     DriverId:
       name: driverId
       in: path
@@ -120,6 +212,9 @@ components:
       schema:
         type: string
         format: uuid
+        minLength: 36
+        maxLength: 36
+        pattern: '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$'
     CustomerId:
       name: customerId
       in: path
@@ -127,6 +222,9 @@ components:
       schema:
         type: string
         format: uuid
+        minLength: 36
+        maxLength: 36
+        pattern: '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$'
   responses:
     NotFound:
       description: Không tìm thấy tài nguyên
@@ -154,9 +252,15 @@ components:
         id:
           type: string
           format: uuid
+          minLength: 36
+          maxLength: 36
+          pattern: '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$'
         tripId:
           type: string
           format: uuid
+          minLength: 36
+          maxLength: 36
+          pattern: '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$'
           nullable: true
         type:
           type: string

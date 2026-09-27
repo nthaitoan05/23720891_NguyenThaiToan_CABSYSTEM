@@ -1,4 +1,9 @@
 openapi: 3.0.3
+x-design-rules:
+  source: ../srs.md
+  sections: [15, 16]
+  status: coursework-design-decisions
+  description: Quy tắc thiết kế cho bài tại SRS mục 15; chưa phải xác nhận thực tế của khách hàng.
 info:
   title: CAB System - Customer Profile API
   description: Quản lý hồ sơ cá nhân của khách hàng (FR02).
@@ -31,6 +36,24 @@ paths:
                 $ref: '#/components/schemas/Customer'
         '404':
           $ref: '#/components/responses/NotFound'
+        '400':
+          description: Dữ liệu không hợp lệ theo DR01/DR02.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Thông tin xác thực hoặc chữ ký không hợp lệ.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền thực hiện thao tác.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     put:
       tags:
       - Customer
@@ -55,6 +78,18 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/NotFound'
+        '401':
+          description: Thông tin xác thực hoặc chữ ký không hợp lệ.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền thực hiện thao tác.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
   securitySchemes:
     bearerAuth:
@@ -74,6 +109,9 @@ components:
       schema:
         type: string
         format: uuid
+        minLength: 36
+        maxLength: 36
+        pattern: '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$'
   responses:
     NotFound:
       description: Không tìm thấy tài nguyên
@@ -94,14 +132,25 @@ components:
         id:
           type: string
           format: uuid
+          minLength: 36
+          maxLength: 36
+          pattern: '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$'
         fullName:
           type: string
+          minLength: 1
+          maxLength: 100
+          pattern: '.*\S.*'
         phone:
           type: string
+          minLength: 10
+          maxLength: 10
+          pattern: '^0[0-9]{9}$'
         email:
           type: string
+          minLength: 1
         address:
           type: string
+          maxLength: 255
         status:
           type: string
           enum:
@@ -122,8 +171,13 @@ components:
       properties:
         fullName:
           type: string
+          minLength: 1
+          maxLength: 100
+          pattern: '.*\S.*'
         email:
           type: string
+          minLength: 1
           format: email
         address:
           type: string
+          maxLength: 255

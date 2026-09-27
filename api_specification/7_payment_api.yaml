@@ -1,4 +1,9 @@
 openapi: 3.0.3
+x-design-rules:
+  source: ../srs.md
+  sections: [15, 16]
+  status: coursework-design-decisions
+  description: Quy tắc thiết kế cho bài tại SRS mục 15; chưa phải xác nhận thực tế của khách hàng.
 info:
   title: CAB System - Payment API
   description: Tính cước, thanh toán (tiền mặt/điện tử), xử lý kết quả giao dịch và webhook từ nhà cung
@@ -37,6 +42,36 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Fare'
+        '400':
+          description: Dữ liệu không hợp lệ theo DR01/DR02.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Thông tin xác thực hoặc chữ ký không hợp lệ.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền thực hiện thao tác.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Không tìm thấy đối tượng hoặc dữ liệu được yêu cầu.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Xung đột trạng thái hoặc dữ liệu theo SRS mục 15.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /trips/{tripId}/payment:
     get:
       tags:
@@ -54,6 +89,24 @@ paths:
                 $ref: '#/components/schemas/Payment'
         '404':
           $ref: '#/components/responses/NotFound'
+        '400':
+          description: Dữ liệu không hợp lệ theo DR01/DR02.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Thông tin xác thực hoặc chữ ký không hợp lệ.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền thực hiện thao tác.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     post:
       tags:
       - Customer
@@ -85,6 +138,18 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/NotFound'
+        '401':
+          description: Thông tin xác thực hoặc chữ ký không hợp lệ.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền thực hiện thao tác.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /trips/{tripId}/payment/retry:
     post:
       tags:
@@ -104,6 +169,24 @@ paths:
           $ref: '#/components/responses/NotFound'
         '409':
           description: Chuyến đi đã được thanh toán thành công trước đó
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '400':
+          description: Dữ liệu không hợp lệ theo DR01/DR02.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Thông tin xác thực hoặc chữ ký không hợp lệ.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Không có quyền thực hiện thao tác.
           content:
             application/json:
               schema:
@@ -130,12 +213,24 @@ paths:
               - transactionReference
               - tripId
               - status
+              oneOf:
+              - required: [amount]
+                properties:
+                  status:
+                    enum: [success]
+              - properties:
+                  status:
+                    enum: [failed]
               properties:
                 transactionReference:
                   type: string
+                  minLength: 1
                 tripId:
                   type: string
                   format: uuid
+                  minLength: 36
+                  maxLength: 36
+                  pattern: '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$'
                 status:
                   type: string
                   enum:
@@ -176,6 +271,9 @@ components:
       schema:
         type: string
         format: uuid
+        minLength: 36
+        maxLength: 36
+        pattern: '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$'
   responses:
     NotFound:
       description: Không tìm thấy tài nguyên
@@ -203,9 +301,15 @@ components:
         id:
           type: string
           format: uuid
+          minLength: 36
+          maxLength: 36
+          pattern: '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$'
         tripId:
           type: string
           format: uuid
+          minLength: 36
+          maxLength: 36
+          pattern: '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$'
         method:
           type: string
           enum:
@@ -222,6 +326,7 @@ components:
           - failed
         transactionReference:
           type: string
+          minLength: 1
           nullable: true
         failureReason:
           type: string
@@ -232,6 +337,14 @@ components:
           nullable: true
     PaymentRequest:
       type: object
+      oneOf:
+      - properties:
+          method:
+            enum: [cash]
+      - required: [paymentToken]
+        properties:
+          method:
+            enum: [e_wallet, credit_card]
       required:
       - method
       properties:
@@ -243,6 +356,8 @@ components:
           - credit_card
         paymentToken:
           type: string
+          minLength: 1
+          pattern: '.*\S.*'
           description: 'Token giao dịch do nhà cung cấp thanh toán bên ngoài cấp (không chứa thông tin
             thẻ/tài khoản nhạy cảm - NFR08).
 
@@ -253,6 +368,9 @@ components:
         tripId:
           type: string
           format: uuid
+          minLength: 36
+          maxLength: 36
+          pattern: '^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$'
         amount:
           type: number
         currency:

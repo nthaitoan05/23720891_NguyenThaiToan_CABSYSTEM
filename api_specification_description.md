@@ -5,6 +5,8 @@ Tài liệu này mô tả chi tiết toàn bộ 11 API được chia theo domain
 `api_specification/`. Mỗi API tương ứng với một file `.yaml` (OpenAPI 3.0.3) độc lập,
 có thể triển khai như một microservice riêng biệt.
 
+> Quy tắc dữ liệu, nghiệp vụ và lỗi API áp dụng theo SRS mục 15. Đây là quyết định thiết kế cho phạm vi bài, không phải xác nhận thực tế của khách hàng.
+
 ## Tổng quan
 
 | # | File | API | Số endpoint | FR liên quan |
@@ -31,7 +33,7 @@ có thể triển khai như một microservice riêng biệt.
 | Method | Endpoint | Chức năng | Mô tả | Request Body | Response codes |
 |---|---|---|---|---|---|
 | POST | `/customers/register` *(public)* | Đăng ký tài khoản khách hàng | FR01 - Đăng ký & đăng nhập. Khách hàng tự đăng ký tài khoản. | `CustomerRegisterRequest` | 201, 400, 409 |
-| POST | `/drivers/register` *(public)* | Đăng ký tài khoản tài xế | FR01 - Đăng ký & đăng nhập. Tài xế tự đăng ký; có thể được nhân viên vận hành tạo thay (xem Operator - FR15). | `DriverRegisterRequest` | 201, 400 |
+| POST | `/drivers/register` *(public)* | Đăng ký tài khoản tài xế | FR01 - Đăng ký & đăng nhập. Tài xế tự đăng ký; có thể được nhân viên vận hành tạo thay (xem Operator - FR15). | `DriverRegisterRequest` | 201, 400, 409 |
 | POST | `/auth/login` *(public)* | Đăng nhập (khách hàng hoặc tài xế) | FR01 - Đăng ký & đăng nhập. Xác thực người dùng trước khi sử dụng các chức năng yêu cầu tài khoản (NFR05). | `LoginRequest` | 200, 401 |
 
 ---
@@ -43,8 +45,8 @@ Quản lý hồ sơ cá nhân của khách hàng (FR02).
 
 | Method | Endpoint | Chức năng | Mô tả | Request Body | Response codes |
 |---|---|---|---|---|---|
-| GET | `/customers/{customerId}` | Xem thông tin cá nhân khách hàng | FR02 - Cập nhật hồ sơ. | — | 200, 404 |
-| PUT | `/customers/{customerId}` | Cập nhật thông tin cá nhân khách hàng | FR02 - Cập nhật hồ sơ. | `CustomerUpdateRequest` | 200, 400, 404 |
+| GET | `/customers/{customerId}` | Xem thông tin cá nhân khách hàng | FR02 - Cập nhật hồ sơ. | — | 200, 400, 401, 403, 404 |
+| PUT | `/customers/{customerId}` | Cập nhật thông tin cá nhân khách hàng | FR02 - Cập nhật hồ sơ. | `CustomerUpdateRequest` | 200, 400, 401, 403, 404 |
 
 ---
 
@@ -55,14 +57,14 @@ Quản lý hồ sơ, phương tiện và trạng thái sẵn sàng của tài x�
 
 | Method | Endpoint | Chức năng | Mô tả | Request Body | Response codes |
 |---|---|---|---|---|---|
-| GET | `/drivers/{driverId}` | Xem hồ sơ tài xế | FR02 - Cập nhật hồ sơ. | — | 200, 404 |
-| PUT | `/drivers/{driverId}` | Cập nhật hồ sơ tài xế | FR02 - Cập nhật hồ sơ. | `DriverUpdateRequest` | 200, 400 |
-| GET | `/drivers/{driverId}/vehicles` | Xem danh sách phương tiện của tài xế | FR02 - Cập nhật hồ sơ. | — | 200 |
-| POST | `/drivers/{driverId}/vehicles` | Thêm phương tiện mới | FR02 - Cập nhật hồ sơ. | `VehicleRequest` | 201, 400 |
-| GET | `/drivers/{driverId}/vehicles/{vehicleId}` | Xem chi tiết phương tiện | FR02 - Cập nhật hồ sơ. | — | 200, 404 |
-| PUT | `/drivers/{driverId}/vehicles/{vehicleId}` | Cập nhật thông tin phương tiện | FR02 - Cập nhật hồ sơ. | `VehicleRequest` | 200, 400, 404 |
-| DELETE | `/drivers/{driverId}/vehicles/{vehicleId}` | Xóa phương tiện | FR02 - Cập nhật hồ sơ. | — | 204, 404, 409 |
-| PUT | `/drivers/{driverId}/availability` | Cập nhật trạng thái sẵn sàng nhận chuyến | FR02 - Cập nhật hồ sơ (Business Rule RL01: chỉ tài xế 'available' mới được phân công chuyến). | — | 200 |
+| GET | `/drivers/{driverId}` | Xem hồ sơ tài xế | FR02 - Cập nhật hồ sơ. | — | 200, 400, 401, 403, 404 |
+| PUT | `/drivers/{driverId}` | Cập nhật hồ sơ tài xế | FR02 - Cập nhật hồ sơ. | `DriverUpdateRequest` | 200, 400, 401, 403, 404 |
+| GET | `/drivers/{driverId}/vehicles` | Xem danh sách phương tiện của tài xế | FR02 - Cập nhật hồ sơ. | — | 200, 400, 401, 403, 404 |
+| POST | `/drivers/{driverId}/vehicles` | Thêm phương tiện mới | FR02 - Cập nhật hồ sơ. | `VehicleRequest` | 201, 400, 401, 403, 404 |
+| GET | `/drivers/{driverId}/vehicles/{vehicleId}` | Xem chi tiết phương tiện | FR02 - Cập nhật hồ sơ. | — | 200, 400, 401, 403, 404 |
+| PUT | `/drivers/{driverId}/vehicles/{vehicleId}` | Cập nhật thông tin phương tiện | FR02 - Cập nhật hồ sơ. | `VehicleRequest` | 200, 400, 401, 403, 404 |
+| DELETE | `/drivers/{driverId}/vehicles/{vehicleId}` | Xóa phương tiện | FR02 - Cập nhật hồ sơ. | — | 204, 400, 401, 403, 404, 409 |
+| PUT | `/drivers/{driverId}/availability` | Cập nhật trạng thái sẵn sàng nhận chuyến | FR02 - Cập nhật hồ sơ (Business Rule RL01: chỉ tài xế 'available' mới được phân công chuyến). | — | 200, 400, 401, 403, 404, 409 |
 
 ---
 
@@ -73,13 +75,13 @@ Toàn bộ vòng đời một chuyến đi: tạo yêu cầu đặt xe, tìm/ưu
 
 | Method | Endpoint | Chức năng | Mô tả | Request Body | Response codes |
 |---|---|---|---|---|---|
-| POST | `/trips` | Tạo yêu cầu đặt xe | FR03 - Tạo yêu cầu đặt xe. Khách hàng nhập điểm đón, điểm đến, chọn loại xe và gửi yêu cầu; hệ thống tiếp nhận yêu cầu và kích hoạt quy trình tìm tài xế (nội bộ, xem Internal Services - FR04). | `TripRequest` | 201, 400 |
-| GET | `/trips/{tripId}` | Theo dõi trạng thái chuyến đi | FR08 - Theo dõi chuyến. Trả về trạng thái hiện tại của chuyến, thông tin tài xế đã nhận chuyến (nếu có) và thời gian dự kiến đến (ETA). | — | 200, 404 |
-| DELETE | `/trips/{tripId}` | Hủy yêu cầu đặt xe | FR03 - Tạo yêu cầu đặt xe. Cho phép khách hàng hủy chuyến khi còn ở trạng thái sớm (requested, finding_driver, driver_assigned). Chính sách hủy chi tiết (phí hủy, mốc thời gian cho phép) là điểm cần xác nhận thêm với khách hàng (Open Question OQ04). | — | 204, 404, 409 |
-| POST | `/internal/matching/find-driver` | Xác định & ưu tiên tài xế phù hợp cho chuyến đi | FR04 - Xác định & ưu tiên tài xế phù hợp. Được Trip Service gọi ngay sau khi chuyến đi được tạo (POST /trips). Trả về danh sách tài xế đã ưu tiên theo vị trí và trạng thái sẵn sàng (Business Rule RL01). | — | 200, 404 |
-| POST | `/internal/matching/next-driver` | Tìm tài xế thay thế | FR06 - Tìm tài xế thay thế. Được gọi khi tài xế được đề xuất từ chối hoặc không phản hồi trong thời gian quy định (Business Rule RL02). | — | 200, 404 |
-| POST | `/trips/{tripId}/response` | Chấp nhận hoặc từ chối yêu cầu chuyến | FR05 - Gửi yêu cầu & xử lý phản hồi tài xế. Nếu tài xế từ chối hoặc không phản hồi trong thời gian quy định, hệ thống tự động tìm tài xế thay thế (FR06 - Internal Services). | — | 200, 409 |
-| PUT | `/trips/{tripId}/status` | Cập nhật trạng thái thực hiện chuyến | FR07 - Cập nhật trạng thái & vị trí chuyến. Các trạng thái hợp lệ: arrived_at_pickup -> picked_up -> in_progress -> completed (theo đúng thứ tự). | — | 200, 400 |
+| POST | `/trips` | Tạo yêu cầu đặt xe | FR03 - Tạo yêu cầu đặt xe. Khách hàng nhập điểm đón, điểm đến, chọn loại xe và gửi yêu cầu; hệ thống tiếp nhận yêu cầu và kích hoạt quy trình tìm tài xế (nội bộ, xem Internal Services - FR04). | `TripRequest` | 201, 400, 401, 403, 409 |
+| GET | `/trips/{tripId}` | Theo dõi trạng thái chuyến đi | FR08 - Theo dõi chuyến. Trả về trạng thái hiện tại của chuyến, thông tin tài xế đã nhận chuyến (nếu có) và thời gian dự kiến đến (ETA). | — | 200, 400, 401, 403, 404 |
+| DELETE | `/trips/{tripId}` | Hủy yêu cầu đặt xe | FR03 - Tạo yêu cầu đặt xe. Cho phép khách hàng hủy chuyến khi còn ở trạng thái sớm (requested, finding_driver, driver_assigned). Áp dụng DR03: khách hàng chỉ hủy ở ba trạng thái này, miễn phí; từ arrived_at_pickup trả 409. | — | 204, 400, 401, 403, 404, 409 |
+| POST | `/internal/matching/find-driver` | Xác định & ưu tiên tài xế phù hợp cho chuyến đi | FR04 - Xác định & ưu tiên tài xế phù hợp. Được Trip Service gọi ngay sau khi chuyến đi được tạo (POST /trips). Trả về danh sách tài xế đã ưu tiên theo vị trí và trạng thái sẵn sàng (Business Rule RL01). | — | 200, 400, 401, 403, 404 |
+| POST | `/internal/matching/next-driver` | Tìm tài xế thay thế | FR06 - Tìm tài xế thay thế. Được gọi khi tài xế được đề xuất từ chối hoặc không phản hồi trong thời gian quy định (Business Rule RL02). | — | 200, 400, 401, 403, 404 |
+| POST | `/trips/{tripId}/response` | Chấp nhận hoặc từ chối yêu cầu chuyến | FR05 - Gửi yêu cầu & xử lý phản hồi tài xế. Nếu tài xế từ chối hoặc không phản hồi trong thời gian quy định, hệ thống tự động tìm tài xế thay thế (FR06 - Internal Services). | — | 200, 400, 401, 403, 404, 409 |
+| PUT | `/trips/{tripId}/status` | Cập nhật trạng thái thực hiện chuyến | FR07 - Cập nhật trạng thái & vị trí chuyến. Các trạng thái hợp lệ: arrived_at_pickup -> picked_up -> in_progress -> completed (theo đúng thứ tự). | — | 200, 400, 401, 403, 404 |
 
 ---
 
@@ -90,7 +92,7 @@ Ghi nhận vị trí tài xế theo thời gian thực, phục vụ tìm tài x�
 
 | Method | Endpoint | Chức năng | Mô tả | Request Body | Response codes |
 |---|---|---|---|---|---|
-| PUT | `/drivers/{driverId}/location` | Cập nhật vị trí hiện tại của tài xế | FR07 - Cập nhật trạng thái & vị trí chuyến. Hỗ trợ tìm tài xế gần khách hàng và tính ETA. | `Location` | 204 |
+| PUT | `/drivers/{driverId}/location` | Cập nhật vị trí hiện tại của tài xế | FR07 - Cập nhật trạng thái & vị trí chuyến. Hỗ trợ tìm tài xế gần khách hàng và tính ETA. | `Location` | 204, 400, 401, 403, 404 |
 
 ---
 
@@ -101,10 +103,10 @@ Gửi và quản lý thông báo cho khách hàng và tài xế trong suốt quy
 
 | Method | Endpoint | Chức năng | Mô tả | Request Body | Response codes |
 |---|---|---|---|---|---|
-| GET | `/customers/{customerId}/notifications` | Xem danh sách thông báo của khách hàng | FR12 - Gửi thông báo. Bao gồm các sự kiện: tiếp nhận yêu cầu, tài xế nhận chuyến, tài xế đến điểm đón, hoàn thành chuyến, kết quả thanh toán, không tìm được tài xế. | — | 200 |
-| GET | `/drivers/{driverId}/notifications` | Xem danh sách thông báo của tài xế | FR12 - Gửi thông báo. Bao gồm: chuyến mới, thay đổi liên quan đến chuyến đang thực hiện. | — | 200 |
-| PATCH | `/notifications/{notificationId}` | Đánh dấu thông báo đã đọc | FR12 - Gửi thông báo. | — | 200, 404 |
-| DELETE | `/notifications/{notificationId}` | Xóa thông báo | FR12 - Gửi thông báo. | — | 204, 404 |
+| GET | `/customers/{customerId}/notifications` | Xem danh sách thông báo của khách hàng | FR12 - Gửi thông báo. Bao gồm các sự kiện: tiếp nhận yêu cầu, tài xế nhận chuyến, tài xế đến điểm đón, hoàn thành chuyến, kết quả thanh toán, không tìm được tài xế. | — | 200, 400, 401, 403, 404 |
+| GET | `/drivers/{driverId}/notifications` | Xem danh sách thông báo của tài xế | FR12 - Gửi thông báo. Bao gồm: chuyến mới, thay đổi liên quan đến chuyến đang thực hiện. | — | 200, 400, 401, 403, 404 |
+| PATCH | `/notifications/{notificationId}` | Đánh dấu thông báo đã đọc | FR12 - Gửi thông báo. | — | 200, 400, 401, 403, 404 |
+| DELETE | `/notifications/{notificationId}` | Xóa thông báo | FR12 - Gửi thông báo. | — | 204, 400, 401, 403, 404 |
 
 ---
 
@@ -115,10 +117,10 @@ Tính cước, thanh toán (tiền mặt/điện tử), xử lý kết quả gia
 
 | Method | Endpoint | Chức năng | Mô tả | Request Body | Response codes |
 |---|---|---|---|---|---|
-| POST | `/internal/trips/{tripId}/calculate-fare` | Tính cước chuyến đi | FR09 - Tính cước. Được gọi ngay sau khi tài xế cập nhật trạng thái "completed" (PUT /trips/{tripId}/status), trước khi khách hàng thanh toán. | — | 200 |
-| GET | `/trips/{tripId}/payment` | Xem chi tiết thanh toán của chuyến đi | FR10 - Thanh toán. Xem trạng thái và chi tiết giao dịch thanh toán. | — | 200, 404 |
-| POST | `/trips/{tripId}/payment` | Thực hiện thanh toán cho chuyến đi | FR10 - Thanh toán. Hỗ trợ thanh toán tiền mặt hoặc điện tử qua nhà cung cấp thanh toán bên ngoài. Không lưu trực tiếp thông tin thẻ/tài khoản thanh toán nhạy cảm trong hệ thống (NFR08, Business Rule RL04). | `PaymentRequest` | 202, 400, 404 |
-| POST | `/trips/{tripId}/payment/retry` | Xử lý lại thanh toán điện tử sau khi thất bại | FR11 - Ghi nhận & xử lý kết quả thanh toán (Business Rule RL07). | — | 202, 404, 409 |
+| POST | `/internal/trips/{tripId}/calculate-fare` | Tính cước chuyến đi | FR09 - Tính cước. Được gọi ngay sau khi tài xế cập nhật trạng thái "completed" (PUT /trips/{tripId}/status), trước khi khách hàng thanh toán. | — | 200, 400, 401, 403, 404, 409 |
+| GET | `/trips/{tripId}/payment` | Xem chi tiết thanh toán của chuyến đi | FR10 - Thanh toán. Xem trạng thái và chi tiết giao dịch thanh toán. | — | 200, 400, 401, 403, 404 |
+| POST | `/trips/{tripId}/payment` | Thực hiện thanh toán cho chuyến đi | FR10 - Thanh toán. Hỗ trợ thanh toán tiền mặt hoặc điện tử qua nhà cung cấp thanh toán bên ngoài. Không lưu trực tiếp thông tin thẻ/tài khoản thanh toán nhạy cảm trong hệ thống (NFR08, Business Rule RL04). | `PaymentRequest` | 202, 400, 401, 403, 404 |
+| POST | `/trips/{tripId}/payment/retry` | Xử lý lại thanh toán điện tử sau khi thất bại | FR11 - Ghi nhận & xử lý kết quả thanh toán (Business Rule RL07). | — | 202, 400, 401, 403, 404, 409 |
 | POST | `/webhooks/payments/callback` *(public)* | Nhận kết quả giao dịch từ nhà cung cấp thanh toán | FR11 - Ghi nhận & xử lý kết quả thanh toán. Nhà cung cấp thanh toán bên ngoài gọi endpoint này để trả kết quả giao dịch điện tử. Khi thất bại, hệ thống kích hoạt thông báo cho khách hàng (FR12, Business Rule RL07). | — | 200, 400, 401 |
 
 ---
@@ -130,13 +132,13 @@ Xem lịch sử chuyến đi, số tiền phải trả và đánh giá tài xế
 
 | Method | Endpoint | Chức năng | Mô tả | Request Body | Response codes |
 |---|---|---|---|---|---|
-| GET | `/customers/{customerId}/trips` | Xem lịch sử các chuyến đã thực hiện | FR13 - Xem lịch sử & số tiền phải trả. | — | 200 |
-| GET | `/drivers/{driverId}/trips` | Xem lịch sử các chuyến đã thực hiện | FR07 - Cập nhật trạng thái & vị trí chuyến. | — | 200 |
-| GET | `/trips/{tripId}/fare` | Xem số tiền phải trả của chuyến | FR13 - Xem lịch sử & số tiền phải trả. Yêu cầu chuyến đã được tính cước (FR09 - Internal Services). | — | 200, 404 |
-| GET | `/trips/{tripId}/rating` | Xem đánh giá đã gửi cho chuyến đi | FR14 - Đánh giá tài xế. | — | 200, 404 |
-| POST | `/trips/{tripId}/rating` | Đánh giá tài xế sau khi hoàn thành chuyến | FR14 - Đánh giá tài xế. Chỉ áp dụng khi chuyến đã hoàn thành (Business Rule RL06). | `RatingRequest` | 201, 400, 409 |
-| PUT | `/trips/{tripId}/rating` | Chỉnh sửa đánh giá đã gửi | FR14 - Đánh giá tài xế. | `RatingRequest` | 200, 404 |
-| DELETE | `/trips/{tripId}/rating` | Xóa đánh giá đã gửi | FR14 - Đánh giá tài xế. | — | 204, 404 |
+| GET | `/customers/{customerId}/trips` | Xem lịch sử các chuyến đã thực hiện | FR13 - Xem lịch sử & số tiền phải trả. | — | 200, 400, 401, 403, 404 |
+| GET | `/drivers/{driverId}/trips` | Xem lịch sử các chuyến đã thực hiện | FR07 - Cập nhật trạng thái & vị trí chuyến. | — | 200, 400, 401, 403, 404 |
+| GET | `/trips/{tripId}/fare` | Xem số tiền phải trả của chuyến | FR13 - Xem lịch sử & số tiền phải trả. Yêu cầu chuyến đã được tính cước (FR09 - Internal Services). | — | 200, 400, 401, 403, 404 |
+| GET | `/trips/{tripId}/rating` | Xem đánh giá đã gửi cho chuyến đi | FR14 - Đánh giá tài xế. | — | 200, 400, 401, 403, 404 |
+| POST | `/trips/{tripId}/rating` | Đánh giá tài xế sau khi hoàn thành chuyến | FR14 - Đánh giá tài xế. Chỉ áp dụng khi chuyến đã hoàn thành (Business Rule RL06). | `RatingRequest` | 201, 400, 401, 403, 404, 409 |
+| PUT | `/trips/{tripId}/rating` | Chỉnh sửa đánh giá đã gửi | FR14 - Đánh giá tài xế. | `RatingRequest` | 200, 400, 401, 403, 404 |
+| DELETE | `/trips/{tripId}/rating` | Xóa đánh giá đã gửi | FR14 - Đánh giá tài xế. | — | 204, 400, 401, 403, 404 |
 
 ---
 
@@ -147,19 +149,19 @@ Nhân viên vận hành quản lý tài khoản khách hàng, tài xế và phư
 
 | Method | Endpoint | Chức năng | Mô tả | Request Body | Response codes |
 |---|---|---|---|---|---|
-| GET | `/operator/customers` | Xem danh sách khách hàng | FR15 - Quản lý khách hàng, tài xế, phương tiện. | — | 200 |
-| GET | `/operator/customers/{customerId}` | Xem chi tiết một khách hàng | FR15 - Quản lý khách hàng, tài xế, phương tiện. | — | 200, 404 |
-| PUT | `/operator/customers/{customerId}` | Cập nhật/khóa thông tin khách hàng | FR15 - Quản lý khách hàng, tài xế, phương tiện. | `CustomerUpdateRequest` | 200, 404 |
-| DELETE | `/operator/customers/{customerId}` | Vô hiệu hóa tài khoản khách hàng | FR15 - Quản lý khách hàng, tài xế, phương tiện. | — | 204, 404 |
-| GET | `/operator/drivers` | Xem danh sách tài xế | FR15 - Quản lý khách hàng, tài xế, phương tiện. | — | 200 |
-| POST | `/operator/drivers` | Tạo tài khoản tài xế thay cho tài xế | FR15 - Quản lý khách hàng, tài xế, phương tiện (tài xế được nhân viên vận hành tạo tài khoản, xem FR01). | `DriverRegisterRequest` | 201, 400 |
-| GET | `/operator/drivers/{driverId}` | Xem chi tiết một tài xế | FR15 - Quản lý khách hàng, tài xế, phương tiện. | — | 200, 404 |
-| PUT | `/operator/drivers/{driverId}` | Cập nhật/khóa thông tin tài xế | FR15 - Quản lý khách hàng, tài xế, phương tiện. | `DriverUpdateRequest` | 200, 404 |
-| DELETE | `/operator/drivers/{driverId}` | Vô hiệu hóa tài khoản tài xế | FR15 - Quản lý khách hàng, tài xế, phương tiện. | — | 204, 404 |
-| GET | `/operator/vehicles` | Xem danh sách phương tiện | FR15 - Quản lý khách hàng, tài xế, phương tiện. | — | 200 |
-| GET | `/operator/vehicles/{vehicleId}` | Xem chi tiết một phương tiện | FR15 - Quản lý khách hàng, tài xế, phương tiện. | — | 200, 404 |
-| PUT | `/operator/vehicles/{vehicleId}` | Cập nhật/khóa thông tin phương tiện | FR15 - Quản lý khách hàng, tài xế, phương tiện. | `VehicleRequest` | 200, 404 |
-| DELETE | `/operator/vehicles/{vehicleId}` | Gỡ bỏ phương tiện khỏi hệ thống | FR15 - Quản lý khách hàng, tài xế, phương tiện. | — | 204, 404 |
+| GET | `/operator/customers` | Xem danh sách khách hàng | FR15 - Quản lý khách hàng, tài xế, phương tiện. | — | 200, 400, 401, 403 |
+| GET | `/operator/customers/{customerId}` | Xem chi tiết một khách hàng | FR15 - Quản lý khách hàng, tài xế, phương tiện. | — | 200, 400, 401, 403, 404 |
+| PUT | `/operator/customers/{customerId}` | Cập nhật/khóa thông tin khách hàng | FR15 - Quản lý khách hàng, tài xế, phương tiện. | `CustomerUpdateRequest` | 200, 400, 401, 403, 404 |
+| DELETE | `/operator/customers/{customerId}` | Vô hiệu hóa tài khoản khách hàng | FR15 - Quản lý khách hàng, tài xế, phương tiện. | — | 204, 400, 401, 403, 404 |
+| GET | `/operator/drivers` | Xem danh sách tài xế | FR15 - Quản lý khách hàng, tài xế, phương tiện. | — | 200, 400, 401, 403 |
+| POST | `/operator/drivers` | Tạo tài khoản tài xế thay cho tài xế | FR15 - Quản lý khách hàng, tài xế, phương tiện (tài xế được nhân viên vận hành tạo tài khoản, xem FR01). | `DriverRegisterRequest` | 201, 400, 401, 403 |
+| GET | `/operator/drivers/{driverId}` | Xem chi tiết một tài xế | FR15 - Quản lý khách hàng, tài xế, phương tiện. | — | 200, 400, 401, 403, 404 |
+| PUT | `/operator/drivers/{driverId}` | Cập nhật/khóa thông tin tài xế | FR15 - Quản lý khách hàng, tài xế, phương tiện. | `DriverUpdateRequest` | 200, 400, 401, 403, 404 |
+| DELETE | `/operator/drivers/{driverId}` | Vô hiệu hóa tài khoản tài xế | FR15 - Quản lý khách hàng, tài xế, phương tiện. | — | 204, 400, 401, 403, 404 |
+| GET | `/operator/vehicles` | Xem danh sách phương tiện | FR15 - Quản lý khách hàng, tài xế, phương tiện. | — | 200, 400, 401, 403 |
+| GET | `/operator/vehicles/{vehicleId}` | Xem chi tiết một phương tiện | FR15 - Quản lý khách hàng, tài xế, phương tiện. | — | 200, 400, 401, 403, 404 |
+| PUT | `/operator/vehicles/{vehicleId}` | Cập nhật/khóa thông tin phương tiện | FR15 - Quản lý khách hàng, tài xế, phương tiện. | `VehicleRequest` | 200, 400, 401, 403, 404 |
+| DELETE | `/operator/vehicles/{vehicleId}` | Gỡ bỏ phương tiện khỏi hệ thống | FR15 - Quản lý khách hàng, tài xế, phương tiện. | — | 204, 400, 401, 403, 404 |
 
 ---
 
@@ -170,11 +172,11 @@ Quản lý tài khoản nhân viên vận hành và phân quyền truy cập n�
 
 | Method | Endpoint | Chức năng | Mô tả | Request Body | Response codes |
 |---|---|---|---|---|---|
-| GET | `/operator/staff` | Xem danh sách nhân viên vận hành | FR18 - Phân quyền quản trị. | — | 200 |
-| POST | `/operator/staff` | Tạo tài khoản nhân viên vận hành | FR18 - Phân quyền quản trị. Chỉ nhân viên có quyền quản trị (operator_admin) mới được tạo tài khoản nhân viên mới (NFR06, Business Rule RL08). | `StaffRequest` | 201, 400, 403 |
-| GET | `/operator/staff/{staffId}` | Xem chi tiết một nhân viên vận hành | FR18 - Phân quyền quản trị. | — | 200, 404 |
-| DELETE | `/operator/staff/{staffId}` | Vô hiệu hóa tài khoản nhân viên vận hành | FR18 - Phân quyền quản trị (NFR06, Business Rule RL08). | — | 204, 403, 404 |
-| PUT | `/operator/staff/{staffId}/roles` | Phân quyền cho nhân viên vận hành | FR18 - Phân quyền quản trị (NFR06, Business Rule RL08). Chỉ nhân viên có quyền quản trị mới được gọi API này. | — | 200, 403 |
+| GET | `/operator/staff` | Xem danh sách nhân viên vận hành | FR18 - Phân quyền quản trị. | — | 200, 400, 401, 403 |
+| POST | `/operator/staff` | Tạo tài khoản nhân viên vận hành | FR18 - Phân quyền quản trị. Chỉ nhân viên có quyền quản trị (operator_admin) mới được tạo tài khoản nhân viên mới (NFR06, Business Rule RL08). | `StaffRequest` | 201, 400, 401, 403 |
+| GET | `/operator/staff/{staffId}` | Xem chi tiết một nhân viên vận hành | FR18 - Phân quyền quản trị. | — | 200, 400, 401, 403, 404 |
+| DELETE | `/operator/staff/{staffId}` | Vô hiệu hóa tài khoản nhân viên vận hành | FR18 - Phân quyền quản trị (NFR06, Business Rule RL08). | — | 204, 400, 401, 403, 404 |
+| PUT | `/operator/staff/{staffId}/roles` | Phân quyền cho nhân viên vận hành | FR18 - Phân quyền quản trị (NFR06, Business Rule RL08). Chỉ nhân viên có quyền quản trị mới được gọi API này. | — | 200, 400, 401, 403, 404 |
 
 ---
 
@@ -185,10 +187,10 @@ Nhân viên vận hành theo dõi/xử lý chuyến đi, tra cứu giao dịch v
 
 | Method | Endpoint | Chức năng | Mô tả | Request Body | Response codes |
 |---|---|---|---|---|---|
-| GET | `/operator/trips` | Xem danh sách chuyến đi | FR16 - Quản lý & xử lý chuyến đi. | — | 200 |
-| GET | `/operator/trips/ongoing` | Xem danh sách chuyến đang diễn ra theo thời gian thực | FR16 - Quản lý & xử lý chuyến đi. Bao gồm trạng thái tài xế liên quan. | — | 200 |
-| POST | `/operator/trips/{tripId}/resolve` | Xử lý chuyến đi gặp sự cố | FR16 - Quản lý & xử lý chuyến đi (Exception EX05). | — | 200 |
-| GET | `/operator/transactions` | Tra cứu lịch sử giao dịch thanh toán | FR17 - Tra cứu lịch sử giao dịch. | — | 200 |
-| GET | `/operator/reports` | Xem báo cáo hoạt động hệ thống | FR19 - Báo cáo hoạt động. Bao gồm số lượng chuyến, doanh thu, tỷ lệ hoàn thành, tỷ lệ hủy và hiệu quả hoạt động của tài xế. | — | 200 |
+| GET | `/operator/trips` | Xem danh sách chuyến đi | FR16 - Quản lý & xử lý chuyến đi. | — | 200, 400, 401, 403 |
+| GET | `/operator/trips/ongoing` | Xem danh sách chuyến đang diễn ra theo thời gian thực | FR16 - Quản lý & xử lý chuyến đi. Bao gồm trạng thái tài xế liên quan. | — | 200, 400, 401, 403 |
+| POST | `/operator/trips/{tripId}/resolve` | Xử lý chuyến đi gặp sự cố | FR16 - Quản lý & xử lý chuyến đi (Exception EX05). | — | 200, 400, 401, 403, 404, 409 |
+| GET | `/operator/transactions` | Tra cứu lịch sử giao dịch thanh toán | FR17 - Tra cứu lịch sử giao dịch. | — | 200, 400, 401, 403 |
+| GET | `/operator/reports` | Xem báo cáo hoạt động hệ thống | FR19 - Báo cáo hoạt động. Bao gồm số lượng chuyến, doanh thu, tỷ lệ hoàn thành, tỷ lệ hủy và hiệu quả hoạt động của tài xế. | — | 200, 400, 401, 403 |
 
 ---
